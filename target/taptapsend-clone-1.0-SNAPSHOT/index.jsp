@@ -36,18 +36,17 @@
                         Bienvenue
                     </h1>
                     <p class="text-gray-600">
-                        
+
                     </p>
                 </div>
 
-                <button hx-get="${ctx}/fragment" hx-target="#dynamic-content"
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow">
-                    Charger le contenu dynamique
-                </button>
-
-                <div id="dynamic-content" class="mt-4 p-4 border rounded">
-                    <p>Cliquez pour charger du contenu a tous</p>
+                <div class="flex flex-col gap-3 mt-8 max-w-xs mx-auto">
+                    <a href="${ctx}/clients/list"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-center px-4 py-3 rounded shadow">
+                        Gestion des Clients
+                    </a>
                 </div>
+
             </body>
 
             </html>

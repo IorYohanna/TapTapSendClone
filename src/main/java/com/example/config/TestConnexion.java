@@ -6,7 +6,7 @@ public class TestConnexion {
     public static void main(String[] args) {
         System.out.println("Tentative de connexion...");
         
-        try (Connection conn = db.getConnection()) {
+        try (Connection conn = Db.getConnection()) {
             if (conn != null && !conn.isClosed()) {
                 System.out.println("La connexion au db est reussie !");
             } else {
