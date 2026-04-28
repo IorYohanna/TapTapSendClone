@@ -46,7 +46,7 @@
                 </button>
 
                 <div id="dynamic-content" class="mt-4 p-4 border rounded">
-                    <p>Cliquez pour charger du contenu.</p>
+                    <p>Cliquez pour charger du contenu a tous</p>
                 </div>
             </body>
 

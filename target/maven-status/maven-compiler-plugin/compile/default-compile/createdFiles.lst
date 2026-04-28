@@ -1,2 +1,3 @@
-com\example\FragmentServlet.class
-com\example\HomeServlet.class
+com\example\config\db.class
+com\example\controller\HomeServlet.class
+com\example\controller\FragmentServlet.class

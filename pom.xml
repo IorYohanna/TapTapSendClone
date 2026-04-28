@@ -4,16 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <!-- Informations du projet -->
     <groupId>com.example</groupId>
     <artifactId>taptapsend-clone</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-
     <name>TapTapSend Clone</name>
     <description>Projet web Java avec JSTL et HTMX</description>
-
     <!-- Propriétés pour gérer les versions des dépendances -->
     <properties>
         <maven.compiler.source>24</maven.compiler.source>
@@ -23,16 +20,15 @@
         <jstl.version>3.0.0</jstl.version>
         <tomcat.version>10.1.17</tomcat.version>
     </properties>
-
     <dependencies>
         <!-- Jakarta Servlet API pour les servlets -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
             <version>${jakarta.servlet.version}</version>
-            <scope>provided</scope> <!-- Fourni par Tomcat au runtime -->
+            <scope>provided</scope>
+            <!-- Fourni par Tomcat au runtime -->
         </dependency>
-
         <!-- JSTL API et implémentation pour Jakarta EE -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
@@ -44,13 +40,13 @@
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>${jstl.version}</version>
         </dependency>
-
         <!-- Tomcat Embedded pour les tests ou développement local (optionnel) -->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
             <version>${tomcat.version}</version>
-            <scope>test</scope> <!-- Utilisé uniquement pour les tests -->
+            <scope>test</scope>
+            <!-- Utilisé uniquement pour les tests -->
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
@@ -58,8 +54,17 @@
             <version>${tomcat.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <!-- Plugin Maven pour compiler le projet -->
@@ -72,7 +77,6 @@
                     <target>24</target>
                 </configuration>
             </plugin>
-
             <!-- Plugin pour générer le WAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
