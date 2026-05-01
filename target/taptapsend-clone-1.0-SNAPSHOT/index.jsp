@@ -47,6 +47,27 @@
                     </a>
                 </div>
 
+                <div class="flex flex-col gap-3 mt-8 max-w-xs mx-auto">
+                    <a href="${ctx}/taux/list"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-center px-4 py-3 rounded shadow">
+                        Gestion des Taux
+                    </a>
+                </div>
+
+                <div class="flex flex-col gap-3 mt-8 max-w-xs mx-auto">
+                    <a href="${ctx}/envois/list"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-center px-4 py-3 rounded shadow">
+                        Gestion des Envois
+                    </a>
+                </div>
+
+                <div class="flex flex-col gap-3 mt-8 max-w-xs mx-auto">
+                    <a href="${ctx}/frais/list"
+                        class="bg-blue-500 hover:bg-blue-600 text-white text-center px-4 py-3 rounded shadow">
+                        Gestion des Frais
+                    </a>
+                </div>
+
             </body>
 
             </html>

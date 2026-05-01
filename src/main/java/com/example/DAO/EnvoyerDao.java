@@ -1,125 +1,181 @@
 package com.example.DAO;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.example.config.Db;
 import com.example.model.Envoyer;
 
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnvoyerDao {
-    public static Connection conn;
 
-    static {
-        try {
-            conn = Db.getConnection();
+    private Connection conn;
+
+    public EnvoyerDao() {
+         try {
+            this.conn = Db.getConnection();
         } catch (Exception e) {
-            throw new RuntimeException("Erreur de Connexion", e);
-
+            throw new RuntimeException("Erreur de connexion : " + e.getMessage(), e);
         }
     }
 
-    private static final String Lister = " SELECT * FROM \"Envoyer\"";
-    private static final String Supprimer = " DELETE FROM \"Envoyer\" WHERE idEnv = ?";
+    public void envoyerArgent(Envoyer env) throws Exception {
 
-    public List<Envoyer> listerEnv() {
-        List<Envoyer> liste = new ArrayList<>();
+        try {
+            conn.setAutoCommit(false);
 
-        try (Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(Lister)) {
-            while (rs.next()) {
-                liste.add(mapRow(rs));
+            PreparedStatement ps1 = conn.prepareStatement(
+                    "SELECT solde, pays FROM CLIENT WHERE numtel=?");
+            ps1.setString(1, env.getNumEnvoyeur());
+            ResultSet rs1 = ps1.executeQuery();
+
+            if (!rs1.next())
+                throw new Exception("Envoyeur introuvable");
+
+            int solde = rs1.getInt("solde");
+            String paysEnv = rs1.getString("pays");
+
+            PreparedStatement ps2 = conn.prepareStatement(
+                    "SELECT pays FROM CLIENT WHERE numtel=?");
+            ps2.setString(1, env.getNumRecepteur());
+            ResultSet rs2 = ps2.executeQuery();
+
+            if (!rs2.next())
+                throw new Exception("Recepteur introuvable");
+
+            String paysRec = rs2.getString("pays");
+
+            if (paysEnv.equals(paysRec)) {
+                throw new Exception("Transfert doit être international !");
             }
 
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de la récupération de la liste : " + e.getMessage());
-            e.printStackTrace();
-        }
+            PreparedStatement ps3 = conn.prepareStatement(
+                    "SELECT frais FROM FRAIS_ENVOI WHERE ? BETWEEN montant1 AND montant2");
+            ps3.setInt(1, env.getMontant());
+            ResultSet rs3 = ps3.executeQuery();
 
-        return liste;
-    }
+            int frais = 0;
+            if (rs3.next())
+                frais = rs3.getInt("frais");
 
-    public boolean ajouterEnv(Envoyer envoyer) {
-        String verifSql = "SELECT COUNT(*) FROM \"Envoyer\" WHERE idEnv = ?";
-        String insererSql = "INSERT INTO \"Envoyer\" (idEnv, numEnvoyeur, numRecepteur, montant, date, raison) VALUES (?,?,?,?,?,?)";
-
-        try (PreparedStatement checkStmt = conn.prepareStatement(verifSql)) {
-            checkStmt.setString(1, envoyer.getIdEnv());
-
-            try (ResultSet rs = checkStmt.executeQuery()) {
-                if (rs.next() && rs.getInt(1) > 0) {
-                    return false;
-                }
+            if (solde < env.getMontant() + frais) {
+                throw new Exception("Solde insuffisant !");
             }
 
-            try (PreparedStatement insertStmt = conn.prepareStatement(insererSql)) {
-                insertStmt.setString(1, envoyer.getIdEnv());
-                insertStmt.setString(2, envoyer.getNumEnvoyeur());
-                insertStmt.setString(3, envoyer.getNumRecepteur());
-                insertStmt.setInt(4, envoyer.getMontant());
-                insertStmt.setTimestamp(5, envoyer.getDate());
-                insertStmt.setString(6, envoyer.getRaison());
+            Statement st = conn.createStatement();
+            ResultSet rs4 = st.executeQuery("SELECT montant2 FROM TAUX WHERE montant1=1");
 
-                int rowsAffected = insertStmt.executeUpdate();
-                return rowsAffected > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+            int taux = 1;
+            if (rs4.next())
+                taux = rs4.getInt("montant2");
 
-    public static void modifierEnvoyer(Envoyer envoyer, Map<String, Object> data) {
-        if (data == null || data.isEmpty()) {
-            return;
-        }
+            int montantConverti = env.getMontant() * taux;
 
-        StringBuilder sql = new StringBuilder("UPDATE \"Envoyer\" SET ");
-        List<Object> values = new ArrayList<>();
+            PreparedStatement ps4 = conn.prepareStatement(
+                    "UPDATE CLIENT SET solde = solde - ? WHERE numtel=?");
+            ps4.setInt(1, env.getMontant() + frais);
+            ps4.setString(2, env.getNumEnvoyeur());
+            ps4.executeUpdate();
 
-        data.forEach((column, value) -> {
-            sql.append(column).append(" = ? ,");
-            values.add(value);
-        });
+            
+            PreparedStatement ps5 = conn.prepareStatement(
+                    "UPDATE CLIENT SET solde = solde + ? WHERE numtel=?");
+            ps5.setInt(1, montantConverti);
+            ps5.setString(2, env.getNumRecepteur());
+            ps5.executeUpdate();
 
-        sql.setLength(sql.length() - 2);
-        sql.append(" WHERE idEnv = ?");
-        values.add(envoyer.getIdEnv());
+           
+            PreparedStatement ps6 = conn.prepareStatement(
+                    "INSERT INTO ENVOYER VALUES (?, ?, ?, ?, ?, ?)");
+            ps6.setString(1, env.getIdEnv());
+            ps6.setString(2, env.getNumEnvoyeur());
+            ps6.setString(3, env.getNumRecepteur());
+            ps6.setInt(4, env.getMontant());
+            ps6.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            ps6.setString(6, env.getRaison());
+            ps6.executeUpdate();
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
-            for (int i = 0; i < values.size(); i++) {
-                stmt.setObject(i + 1, values.get(i));
-            }
+            conn.commit();
 
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                System.out.println("Mise a jour reussi de envoyer !");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void SupprimerEnvoyer(Envoyer envoyer) {
-        try (PreparedStatement stmt = conn.prepareStatement(Supprimer)) {
-            stmt.setString(1, envoyer.getIdEnv());
-            stmt.executeUpdate();
-            System.out.println("Envoyer supprimer avec succes !");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            conn.rollback();
+            throw e;
         }
     }
 
-    private Envoyer mapRow(ResultSet rs) throws SQLException {
-        return new Envoyer(
-                rs.getString("idEnv"),
-                rs.getString("numEnvoyeur"),
-                rs.getString("numRecepteur"),
-                rs.getInt("montant"),
-                rs.getTimestamp("date"),
-                rs.getString("raison")
-        );
+
+    public List<Envoyer> lister() throws SQLException {
+        List<Envoyer> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM ENVOYER ORDER BY date DESC";
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+
+        while (rs.next()) {
+            Envoyer e = new Envoyer(
+                    rs.getString("idEnv"),
+                    rs.getString("numEnvoyeur"),
+                    rs.getString("numRecepteur"),
+                    rs.getInt("montant"),
+                    rs.getTimestamp("date"),
+                    rs.getString("raison"));
+            list.add(e);
+        }
+        return list;
+    }
+
+    public Envoyer findById(String id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(
+                "SELECT * FROM ENVOYER WHERE idEnv=?");
+        ps.setString(1, id);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            return new Envoyer(
+                    rs.getString("idEnv"),
+                    rs.getString("numEnvoyeur"),
+                    rs.getString("numRecepteur"),
+                    rs.getInt("montant"),
+                    rs.getTimestamp("date"),
+                    rs.getString("raison"));
+        }
+        return null;
+    }
+
+    public void modifier(Envoyer env) throws SQLException {
+        String sql = "UPDATE ENVOYER SET raison=? WHERE idEnv=?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, env.getRaison());
+        ps.setString(2, env.getIdEnv());
+        ps.executeUpdate();
+    }
+
+
+    public void supprimer(String id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM ENVOYER WHERE idEnv=?");
+        ps.setString(1, id);
+        ps.executeUpdate();
+    }
+
+    public List<Envoyer> rechercherParDate(String date) throws SQLException {
+        List<Envoyer> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM ENVOYER WHERE DATE(date)=?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, date);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            list.add(new Envoyer(
+                    rs.getString("idEnv"),
+                    rs.getString("numEnvoyeur"),
+                    rs.getString("numRecepteur"),
+                    rs.getInt("montant"),
+                    rs.getTimestamp("date"),
+                    rs.getString("raison")));
+        }
+        return list;
     }
 }
