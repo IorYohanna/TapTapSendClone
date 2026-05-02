@@ -1,5 +1,6 @@
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\DAO\ClientDao.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\DAO\EnvoyerDao.java
+D:\L3\Project\TapTapSendClone\src\main\java\com\example\config\EmailService.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\controller\EnvoyerController.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\config\TestConnexion.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\DAO\TauxDao.java
@@ -10,6 +11,9 @@ D:\L3\Project\TapTapSendClone\src\main\java\com\example\model\FraisEnvoi.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\config\Db.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\controller\FraisController.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\controller\TauxController.java
+D:\L3\Project\TapTapSendClone\src\main\java\com\example\config\PdfService.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\model\Client.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\model\Taux.java
+D:\L3\Project\TapTapSendClone\src\main\java\com\example\controller\ReleveServlet.java
+D:\L3\Project\TapTapSendClone\src\main\java\com\example\DAO\RecetteDao.java
 D:\L3\Project\TapTapSendClone\src\main\java\com\example\model\Envoyer.java

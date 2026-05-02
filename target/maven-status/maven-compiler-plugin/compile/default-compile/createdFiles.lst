@@ -1,6 +1,10 @@
+com\example\controller\ReleveServlet.class
 com\example\controller\ClientController.class
 com\example\DAO\FraisDao.class
+com\example\config\EmailService.class
+com\example\DAO\RecetteDao.class
 com\example\DAO\ClientDao.class
+com\example\config\EmailService$1.class
 com\example\config\Db.class
 com\example\controller\TauxController.class
 com\example\controller\FraisController.class
@@ -9,6 +13,7 @@ com\example\model\FraisEnvoi.class
 com\example\model\Taux.class
 com\example\DAO\EnvoyerDao.class
 com\example\DAO\TauxDao.class
+com\example\config\PdfService.class
 com\example\controller\HomeServlet.class
 com\example\model\Envoyer.class
 com\example\config\TestConnexion.class
