@@ -5,123 +5,70 @@
 
         <head>
             <meta charset="UTF-8">
-            <title>Clients - TapTapSend</title>
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
+            <title>Clients - MoneyFlow</title>
             <script src="https://cdn.tailwindcss.com"></script>
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
         </head>
 
-        <body style="background: #F4F2EC; padding: 2rem;">
+        <body class="min-h-screen bg-cream font-sans text-ink antialiased p-4 lg:p-8">
             <c:set var="ctx" value="${pageContext.request.contextPath}" />
+            <c:set var="pageActive" value="clients" />
 
-            <div class="max-w-6xl mx-auto">
-                <section class="card">
-                        <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+            <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-72 flex-shrink-0">
+                    <%@ include file="/WEB-INF/views/fragments/sidebar.jsp" %>
+                </div>
+
+                <main class="flex-1 min-w-0">
+                    <section class="custom-card">
+                        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                             <div>
-                                <div class="label" style="margin-bottom: 0;">Administration</div>
-                                <h1 style="font-size: 2.5rem; font-weight: 800; color: #0B0B0B; line-height: 1;">Clients
-                                </h1>
-                                <p style="margin-top: 0.5rem; color: rgba(0,0,0,0.6); font-size: 0.9rem;">
-                                    Gestion des envoyeurs et récepteurs ·
-                                    <span class="badge badge-yellow">${clients != null ? clients.size() : 0} au
-                                        total</span>
-                                </p>
+                                <span
+                                    class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Administration</span>
+                                <h1 class="text-4xl font-black text-[#0B0B0B] mt-1">Répertoire Clients</h1>
+                                <p class="text-gray-500 mt-2 text-sm">Liste complète des utilisateurs enregistrés.</p>
                             </div>
 
-                            <div class="flex gap-3 items-center">
-                                    <form action="${ctx}/clients/search" method="get" class="flex gap-2">
-                                        <input name="q" value="${keyword}" class="input"
-                                            style="border-radius: 999px; min-width: 250px;"
-                                            placeholder="Rechercher nom, pays…">
-                                        <button type="submit" class="btn btn-ghost" style="padding: 0.7rem 1rem;">
-                                            🔍
-                                        </button>
-                                    </form>
-                                    <a href="${ctx}/clients/form" class="btn btn-accent">
-                                        <span>+</span> Nouveau Client
-                                    </a>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="${ctx}/clients/form"
+                                    class="badge-yellow px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2">
+                                    <span class="text-xl leading-none">+</span> Nouveau Client
+                                </a>
                             </div>
                         </div>
 
-                            <c:if test="${not empty param.success}">
-                                <div class="toast success"
-                                    style="margin-bottom: 1.5rem; position: static; max-width: 100%;">
-                                    Opération réussie.
-                                </div>
-                            </c:if>
-                            <c:if test="${not empty error}">
-                                <div class="toast error"
-                                    style="margin-bottom: 1.5rem; position: static; max-width: 100%;">
-                                    Erreur : ${error}
-                                </div>
-                            </c:if>
-
-                                <div class="table-wrap scroll-x">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Téléphone</th>
-                                                <th>Nom Complet</th>
-                                                <th>Sexe</th>
-                                                <th>Pays</th>
-                                                <th>Email</th>
-                                                <th style="text-align: right;">Solde (devise étrangère)</th>
-                                                <th style="text-align: left;">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <c:choose>
-                                                <c:when test="${empty clients}">
-                                                    <tr>
-                                                        <td colspan="7"
-                                                            style="text-align: center; padding: 3rem; color: rgba(0,0,0,0.4);">
-                                                            Aucun client trouvé.
-                                                        </td>
-                                                    </tr>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <c:forEach var="c" items="${clients}">
-                                                        <tr>
-                                                            <td><span class="badge badge-gray"
-                                                                    style="font-family: monospace;">${c.numtel}</span>
-                                                            </td>
-                                                            <td style="font-weight: 700; color: #0B0B0B;">${c.nom}</td>
-                                                            <td><span class="badge badge-soft">${c.sexe}</span></td>
-                                                            <td>${c.pays}</td>
-                                                            <td style="color: rgba(0,0,0,0.5);">${c.email}</td>
-                                                            <td style="text-align: center; font-weight: 800;">${c.solde}</td>
-                                                            <td style="text-align: right;">
-                                                                <div
-                                                                    style="display: flex; gap: 8px; justify-content: flex-end;">
-                                                                    <a href="${ctx}/clients/form?numtel=${c.numtel}"
-                                                                        class="btn btn-ghost"
-                                                                        style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Modifier</a>
-                                                                    <a href="${ctx}/clients/delete?numtel=${c.numtel}"
-                                                                        onclick="return confirm('Supprimer ce client ?')"
-                                                                        class="btn btn-danger"
-                                                                        style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Supprimer</a>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </c:forEach>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <div class="mt-8 flex justify-between items-center border-t pt-6"
-                                    style="border-color: rgba(0,0,0,0.05);">
-                                    <a href="${ctx}/index.jsp"
-                                        style="font-size: 0.8rem; color: rgba(0,0,0,0.4); text-decoration: none;">←
-                                        Retour à l'accueil
-                                    </a>
-                                    <c:if test="${not empty keyword}">
-                                        <a href="${ctx}/clients/list"
-                                            style="font-size: 0.8rem; color: #3b82f6; font-weight: 600;">Réinitialiser
-                                            la recherche</a>
-                                    </c:if>
-                                </div>
-                </section>
+                        <!-- Table standard de la liste -->
+                        <div class="overflow-x-auto table-wrap">
+                            <table class="w-full text-left border-separate border-spacing-y-2">
+                                <thead>
+                                    <tr class="text-gray-400 text-[11px] uppercase tracking-widest font-bold">
+                                        <th class="px-4 pb-4">Contact</th>
+                                        <th class="px-4 pb-4">Nom</th>
+                                        <th class="px-4 pb-4">Pays</th>
+                                        <th class="px-4 pb-4 text-right">Solde</th>
+                                        <th class="px-4 pb-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="c" items="${clients}">
+                                        <tr class="group hover:bg-gray-50 transition-colors">
+                                            <td class="bg-gray-50 group-hover:bg-gray-100/50 rounded-l-2xl px-4 py-4">
+                                                <span class="badge badge-gray">${c.numtel}</span>
+                                            </td>
+                                            <td class="px-4 py-4 font-bold">${c.nom}</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">${c.pays}</td>
+                                            <td class="px-4 py-4 text-right font-black">${c.solde}</td>
+                                            <td class="px-4 py-4 text-right rounded-r-2xl">
+                                                <a href="${ctx}/clients/form?numtel=${c.numtel}"
+                                                    class="btn btn-ghost !p-2 text-xs">Détails</a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </main>
             </div>
         </body>
 

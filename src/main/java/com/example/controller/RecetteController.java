@@ -1,28 +1,31 @@
 package com.example.controller;
 
 import com.example.DAO.EnvoyerDao;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Map;
 
 @WebServlet("/recette")
 public class RecetteController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
-        resp.setContentType("text/html;charset=UTF-8");
+            throws ServletException, IOException {
 
         try {
             EnvoyerDao dao = new EnvoyerDao();
-            int totalFrais = dao.getTotalFrais();
 
-            resp.getWriter().write(
-                    "<span class='recette-montant'>" + totalFrais + " EUR</span>");
+            Map<String, Integer> stats = dao.getStatsGlobales();
+            req.setAttribute("totalFrais", stats.get("recette"));
+            req.setAttribute("totalVolume", stats.get("volume"));
+            req.setAttribute("totalTransactions", stats.get("count"));
+            req.getRequestDispatcher("/WEB-INF/views/fragments/recette.jsp").forward(req, resp);
 
-        } catch (Exception e) {
-            resp.setStatus(500);
-            resp.getWriter().write("<span class='error'>Erreur : " + e.getMessage() + "</span>");
+        } catch (SQLException e) {
+            resp.sendError(500, "Erreur SQL : " + e.getMessage());
         }
     }
 }

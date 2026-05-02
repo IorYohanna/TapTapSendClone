@@ -1,48 +1,34 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <%@ taglib uri="jakarta.tags.core" prefix="c" %>
-        <!DOCTYPE html>
-        <html lang="fr">
+        <c:set var="ctx" value="${pageContext.request.contextPath}" />
+        <div class="modal-backdrop">
+            <div class="modal-panel">
+                <section class="card relative">
+                    <a href="${ctx}/clients/list"
+                        class="absolute top-6 right-6 text-gray-400 hover:text-black text-2xl no-underline">&times;</a>
 
-        <head>
-            <meta charset="UTF-8">
-            <title>${empty client ? 'Nouveau client' : 'Modifier'} - TapTapSend</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
-        </head>
-
-        <body class="bg-gray-50 min-h-screen flex items-center justify-center p-6">
-            <c:set var="ctx" value="${pageContext.request.contextPath}" />
-
-            <div class="w-full max-w-xl">
-                <section class="card">
                     <div class="mb-8">
-                        <div class="text-sm text-ink/50 tracking-wide uppercase">
-                            ${empty client ? 'Création' : 'Modification'}
+                        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">
+                            ${empty client.numtel ? 'Création' : 'Modification'}
                         </div>
-                        <h1 class="font-display text-3xl text-ink">
-                            ${empty client ? 'Ajouter un client' : 'Editer le profil'}
+                        <h1 class="font-display text-3xl text-[#0B0B0B] font-black">
+                            ${empty client.numtel ? 'Ajouter un client' : 'Éditer le profil'}
                         </h1>
                     </div>
 
-                    <c:if test="${not empty error}">
-                        <div class="bg-red-50 text-red-600 p-4 rounded-2xl mb-6 text-sm border border-red-100">
-                            ${error}
-                        </div>
-                    </c:if>
-
                     <form method="post" action="${ctx}/clients/save" class="space-y-5">
-                        <input type="hidden" name="action" value="${empty client ? 'ajouter' : 'modifier'}" />
+                        <input type="hidden" name="action" value="${empty client.numtel ? 'ajouter' : 'modifier'}" />
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-1">
-                                <label>Numéro de téléphone</label>
-                                <input type="text" name="numtel" value="${client.numtel}" ${not empty client
+                            <div>
+                                <label class="label">Numéro de téléphone</label>
+                                <input type="text" name="numtel" value="${client.numtel}" ${not empty client.numtel
                                     ? 'readonly' : '' } required placeholder="03XXXXXXXX"
-                                    class="input ${not empty client ? 'bg-gray-50 text-gray-400' : ''}" />
+                                    class="input ${not empty client.numtel ? 'bg-gray-100 text-gray-400' : ''}" />
                             </div>
-                            <div class="md:col-span-1">
-                                <label>Sexe</label>
-                                <select name="sexe" class="input appearance-none">
+                            <div>
+                                <label class="label">Sexe</label>
+                                <select name="sexe" class="select">
                                     <option value="M" ${client.sexe=='M' ? 'selected' : '' }>Masculin</option>
                                     <option value="F" ${client.sexe=='F' ? 'selected' : '' }>Féminin</option>
                                 </select>
@@ -50,41 +36,31 @@
                         </div>
 
                         <div>
-                            <label>Nom complet</label>
-                            <input type="text" name="nom" value="${client.nom}" required placeholder="ex: Jean Dupont"
-                                class="input" />
+                            <label class="label">Nom complet</label>
+                            <input type="text" name="nom" value="${client.nom}" required class="input" />
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label>Pays</label>
-                                <input type="text" name="pays" value="${client.pays}" required
-                                    placeholder="ex: Madagascar" class="input" />
+                                <label class="label">Pays</label>
+                                <input type="text" name="pays" value="${client.pays}" required class="input" />
                             </div>
                             <div>
-                                <label>Solde initial (devise étrangère)</label>
-                                <input type="number" name="solde" value="${client.solde}" required min="0"
-                                    class="input" />
+                                <label class="label">Solde</label>
+                                <input type="number" name="solde" value="${client.solde}" required class="input" />
                             </div>
-                        </div>
-
-                        <div>
-                            <label>Adresse Email</label>
-                            <input type="email" name="email" value="${client.email}" required
-                                placeholder="email@exemple.com" class="input" />
                         </div>
 
                         <div class="flex items-center justify-between pt-6">
-                            <a href="${ctx}/clients/list" class="text-ink/40 hover:text-ink font-medium text-sm">
+                            <a href="${ctx}/clients/list"
+                                class="text-gray-400 hover:text-black font-bold text-sm no-underline">
                                 Annuler
                             </a>
-                            <button type="submit" class="btn btn-accent shadow-lg shadow-blue-200">
-                                ${empty client ? 'Créer le compte' : 'Enregistrer les modifications'}
+                            <button type="submit" class="btn btn-accent">
+                                ${empty client.numtel ? 'Créer le compte' : 'Enregistrer'}
                             </button>
                         </div>
                     </form>
                 </section>
             </div>
-        </body>
-
-        </html>
+        </div>

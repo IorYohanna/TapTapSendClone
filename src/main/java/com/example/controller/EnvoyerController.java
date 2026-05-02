@@ -53,8 +53,8 @@ public class EnvoyerController extends HttpServlet {
                     req.setAttribute("error", e.getMessage());
                 }
             }
-
-            req.getRequestDispatcher("/WEB-INF/views/envoyer/form.jsp").forward(req, res);
+            req.setAttribute("showForm", true); 
+            req.getRequestDispatcher("/WEB-INF/views/envoyer/list.jsp").forward(req, res);
         } else if (path.equals("/delete")) {
 
             try {

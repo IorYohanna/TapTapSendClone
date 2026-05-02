@@ -31,18 +31,25 @@ public class ClientController extends HttpServlet {
             handleList(req, res);
 
         } else if (path.equals("/form")) {
+            try {
+                List<Client> clients = clientDao.lister();
+                req.setAttribute("clients", clients);
+            } catch (SQLException e) {
+                req.setAttribute("error", e.getMessage());
+            }
+
             String numtel = req.getParameter("numtel");
             if (numtel != null && !numtel.isEmpty()) {
                 try {
                     Client client = clientDao.findByNumtel(numtel);
                     req.setAttribute("client", client);
-
                 } catch (SQLException e) {
-                    req.setAttribute("error", "Client Introuvable" + e.getMessage());
+                    req.setAttribute("error", "Client Introuvable");
                 }
             }
 
-            req.getRequestDispatcher("/WEB-INF/views/client/form.jsp").forward(req, res);
+            req.setAttribute("showForm", true);
+            req.getRequestDispatcher("/WEB-INF/views/client/list.jsp").forward(req, res);
 
         } else if (path.equals("/delete")) {
             String numtel = req.getParameter("numtel");
@@ -56,17 +63,15 @@ public class ClientController extends HttpServlet {
             }
 
         } else if (path.equals("/search")) {
-            String keyword = req.getParameter("q");
             try {
-                List<Client> results = clientDao.rechercherGlobal(keyword);
-                req.setAttribute("clients", results);
-                req.setAttribute("keyword", keyword);
-
+                List<Client> listes = clientDao.lister();
+                req.setAttribute("clients", listes);
             } catch (SQLException e) {
                 req.setAttribute("error", e.getMessage());
             }
+            
 
-            req.getRequestDispatcher("/WEB-INF/views/client/list.jsp").forward(req, res);
+            req.getRequestDispatcher("/WEB-INF/views/client/search.jsp").forward(req, res);
         } else {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -105,7 +110,7 @@ public class ClientController extends HttpServlet {
 
     }
 
-    private void handleList (HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    private void handleList(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         try {
             List<Client> clients = clientDao.lister();
             req.setAttribute("clients", clients);
@@ -113,6 +118,6 @@ public class ClientController extends HttpServlet {
             req.setAttribute("error", e.getMessage());
         }
         req.getRequestDispatcher("/WEB-INF/views/client/list.jsp").forward(req, res);
-     }
+    }
 
 }

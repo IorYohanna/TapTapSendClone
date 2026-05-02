@@ -7,6 +7,7 @@ import com.example.service.EmailService;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,19 +119,26 @@ public class EnvoyerDao {
         }
     }
 
-    public int getTotalFrais() throws SQLException {
+    public Map<String, Integer> getStatsGlobales() throws SQLException {
+        Map<String, Integer> stats = new HashMap<>();
         String sql = """
-                    SELECT COALESCE(SUM(f.frais), 0) AS total
+                    SELECT
+                        COALESCE(SUM(f.frais), 0) AS total_recette,
+                        COALESCE(SUM(e.montant), 0) AS total_volume,
+                        COUNT(e.idEnv) AS total_count
                     FROM ENVOYER e
-                    JOIN FRAIS_ENVOI f
-                      ON e.montant BETWEEN f.montant1 AND f.montant2
+                    JOIN FRAIS_ENVOI f ON e.montant BETWEEN f.montant1 AND f.montant2
                 """;
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        if (rs.next()) {
-            return rs.getInt("total");
+
+        try (Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            if (rs.next()) {
+                stats.put("recette", rs.getInt("total_recette"));
+                stats.put("volume", rs.getInt("total_volume"));
+                stats.put("count", rs.getInt("total_count"));
+            }
         }
-        return 0;
+        return stats;
     }
 
     private String obtenirDevise(String pays) {
