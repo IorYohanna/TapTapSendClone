@@ -6,11 +6,7 @@
         <head>
             <meta charset="UTF-8">
             <title>Clients - TapTapSend</title>
-
-            <!-- 1. Lien vers le fichier CSS centralisé -->
             <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
-
-            <!-- 2. Tailwind pour la structure (Grid/Flex) -->
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
 
@@ -19,7 +15,6 @@
 
             <div class="max-w-6xl mx-auto">
                 <section class="card">
-                    <%-- Header --%>
                         <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
                             <div>
                                 <div class="label" style="margin-bottom: 0;">Administration</div>
@@ -33,7 +28,6 @@
                             </div>
 
                             <div class="flex gap-3 items-center">
-                                <%-- Formulaire de Recherche stylisé avec .input --%>
                                     <form action="${ctx}/clients/search" method="get" class="flex gap-2">
                                         <input name="q" value="${keyword}" class="input"
                                             style="border-radius: 999px; min-width: 250px;"
@@ -48,7 +42,6 @@
                             </div>
                         </div>
 
-                        <%-- Alertes utilisant les classes .toast du CSS --%>
                             <c:if test="${not empty param.success}">
                                 <div class="toast success"
                                     style="margin-bottom: 1.5rem; position: static; max-width: 100%;">
@@ -62,7 +55,6 @@
                                 </div>
                             </c:if>
 
-                            <%-- Tableau utilisant .table-wrap du CSS --%>
                                 <div class="table-wrap scroll-x">
                                     <table>
                                         <thead>
@@ -96,7 +88,7 @@
                                                             <td><span class="badge badge-soft">${c.sexe}</span></td>
                                                             <td>${c.pays}</td>
                                                             <td style="color: rgba(0,0,0,0.5);">${c.email}</td>
-                                                            <td style="text-align: right; font-weight: 800;">${c.solde}</td>
+                                                            <td style="text-align: right; font-weight: 800;">${c.solde} (devise étrangère)</td>
                                                             <td style="text-align: right;">
                                                                 <div
                                                                     style="display: flex; gap: 8px; justify-content: flex-end;">

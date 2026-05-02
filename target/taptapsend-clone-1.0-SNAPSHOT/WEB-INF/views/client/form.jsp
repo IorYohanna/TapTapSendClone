@@ -62,7 +62,7 @@
                                     placeholder="ex: Madagascar" class="input" />
                             </div>
                             <div>
-                                <label>Solde initial (€)</label>
+                                <label>Solde initial (devise étrangère)</label>
                                 <input type="number" name="solde" value="${client.solde}" required min="0"
                                     class="input" />
                             </div>
