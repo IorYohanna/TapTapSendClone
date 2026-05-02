@@ -11,8 +11,7 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -98,7 +97,7 @@ public class EnvoyerController extends HttpServlet {
                     req.getParameter("numEnvoyeur"),
                     req.getParameter("numRecepteur"),
                     Integer.parseInt(req.getParameter("montant")),
-                    Timestamp.valueOf(LocalDateTime.now()),
+                    LocalDate.now(),
                     req.getParameter("raison"));
 
             try {

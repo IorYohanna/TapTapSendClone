@@ -64,8 +64,8 @@
                                                 <th>Sexe</th>
                                                 <th>Pays</th>
                                                 <th>Email</th>
-                                                <th style="text-align: right;">Solde</th>
-                                                <th style="text-align: right;">Actions</th>
+                                                <th style="text-align: right;">Solde (devise étrangère)</th>
+                                                <th style="text-align: left;">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -88,7 +88,7 @@
                                                             <td><span class="badge badge-soft">${c.sexe}</span></td>
                                                             <td>${c.pays}</td>
                                                             <td style="color: rgba(0,0,0,0.5);">${c.email}</td>
-                                                            <td style="text-align: right; font-weight: 800;">${c.solde} (devise étrangère)</td>
+                                                            <td style="text-align: center; font-weight: 800;">${c.solde}</td>
                                                             <td style="text-align: right;">
                                                                 <div
                                                                     style="display: flex; gap: 8px; justify-content: flex-end;">

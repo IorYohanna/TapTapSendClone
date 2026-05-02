@@ -1,18 +1,20 @@
 package com.example.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Envoyer {
     private String idEnv;
     private String numEnvoyeur;
     private String numRecepteur;
     private int montant;
-    private Timestamp date;
+    private LocalDate date;
     private String raison;
 
-    public Envoyer() {}
+    public Envoyer() {
+    }
 
-    public Envoyer(String idEnv, String numEnvoyeur, String numRecepteur, int montant, Timestamp date, String raison) {
+    public Envoyer(String idEnv, String numEnvoyeur, String numRecepteur, int montant, LocalDate date, String raison) {
         this.idEnv = idEnv;
         this.numEnvoyeur = numEnvoyeur;
         this.numRecepteur = numRecepteur;
@@ -21,22 +23,58 @@ public class Envoyer {
         this.raison = raison;
     }
 
-    public String getIdEnv() { return idEnv; }
-    public void setIdEnv(String idEnv) { this.idEnv = idEnv; }
+    public String getIdEnv() {
+        return idEnv;
+    }
 
-    public String getNumEnvoyeur() { return numEnvoyeur; }
-    public void setNumEnvoyeur(String numEnvoyeur) { this.numEnvoyeur = numEnvoyeur; }
+    public void setIdEnv(String idEnv) {
+        this.idEnv = idEnv;
+    }
 
-    public String getNumRecepteur() { return numRecepteur; }
-    public void setNumRecepteur(String numRecepteur) { this.numRecepteur = numRecepteur; }
+    public String getNumEnvoyeur() {
+        return numEnvoyeur;
+    }
 
-    public int getMontant() { return montant; }
-    public void setMontant(int montant) { this.montant = montant; }
+    public void setNumEnvoyeur(String numEnvoyeur) {
+        this.numEnvoyeur = numEnvoyeur;
+    }
 
-    public Timestamp getDate() { return date; }
-    public void setDate(Timestamp date) { this.date = date; }
+    public String getNumRecepteur() {
+        return numRecepteur;
+    }
 
-    public String getRaison() { return raison; }
-    public void setRaison(String raison) { this.raison = raison; }
+    public void setNumRecepteur(String numRecepteur) {
+        this.numRecepteur = numRecepteur;
+    }
+
+    public int getMontant() {
+        return montant;
+    }
+
+    public void setMontant(int montant) {
+        this.montant = montant;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public String getRaison() {
+        return raison;
+    }
+
+    public void setRaison(String raison) {
+        this.raison = raison;
+    }
+
+    public String getFormattedDate() {
+        if (this.date == null)
+            return "";
+        return this.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
 
 }
