@@ -14,6 +14,13 @@
             <c:set var="ctx" value="${pageContext.request.contextPath}" />
             <c:set var="pageActive" value="clients" />
 
+            <div
+                class="pointer-events-none fixed -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-accent blur-3xl opacity-60 z-0">
+            </div>
+            <div
+                class="pointer-events-none fixed -top-32 -left-32 h-[380px] w-[380px] rounded-full bg-accentSoft blur-3xl opacity-70 z-0">
+            </div>
+
             <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8">
                 <div class="lg:w-72 flex-shrink-0">
                     <%@ include file="/WEB-INF/views/fragments/sidebar.jsp" %>
@@ -37,7 +44,6 @@
                             </div>
                         </div>
 
-                        <!-- Table standard de la liste -->
                         <div class="overflow-x-auto table-wrap">
                             <table class="w-full text-left border-separate border-spacing-y-2">
                                 <thead>
@@ -60,7 +66,10 @@
                                             <td class="px-4 py-4 text-right font-black">${c.solde}</td>
                                             <td class="px-4 py-4 text-right rounded-r-2xl">
                                                 <a href="${ctx}/clients/form?numtel=${c.numtel}"
-                                                    class="btn btn-ghost !p-2 text-xs">Détails</a>
+                                                    class="btn btn-ghost !p-2 px-4 text-xs">Modifier</a>
+                                                <a href="${ctx}/clients/delete?numtel=${c.numtel}"
+                                                    onclick="return confirm('Supprimer ?')"
+                                                    class="btn btn-danger !p-2 px-4 text-xs">Supprimer</a>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -70,6 +79,9 @@
                     </section>
                 </main>
             </div>
+            <c:if test="${showForm}">
+                <jsp:include page="form.jsp" />
+            </c:if>
         </body>
 
         </html>

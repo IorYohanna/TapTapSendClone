@@ -16,9 +16,14 @@
                 <c:set var="ctx" value="${pageContext.request.contextPath}" />
                 <c:set var="pageActive" value="envois" />
 
-                <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8">
+                <div
+                    class="pointer-events-none fixed -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-accent blur-3xl opacity-60 z-0">
+                </div>
+                <div
+                    class="pointer-events-none fixed -top-32 -left-32 h-[380px] w-[380px] rounded-full bg-accentSoft blur-3xl opacity-70 z-0">
+                </div>
 
-                    <!-- Sidebar -->
+                <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8">
                     <div class="lg:w-72 flex-shrink-0">
                         <%@ include file="/WEB-INF/views/fragments/sidebar.jsp" %>
                     </div>
@@ -26,7 +31,6 @@
                     <main class="flex-1 min-w-0">
                         <section class="custom-card">
 
-                            <!-- Header -->
                             <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                                 <div>
                                     <span
@@ -90,8 +94,8 @@
                                                         <a href="${ctx}/envois/form?idEnv=${e.idEnv}"
                                                             class="btn btn-ghost py-1 px-3 text-xs">Détails</a>
                                                         <a href="${ctx}/envois/delete?idEnv=${e.idEnv}"
-                                                            onclick="return confirm('Annuler?')"
-                                                            class="btn btn-danger py-1 px-3 text-xs">Annuler</a>
+                                                            onclick="return confirm('Supprimer?')"
+                                                            class="btn btn-danger py-1 px-3 text-xs">Supprimer</a>
                                                     </div>
                                                 </td>
                                             </tr>

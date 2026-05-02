@@ -17,13 +17,13 @@
                     </div>
 
                     <form action="${ctx}/envois/save" method="post" class="space-y-5">
-                        <input type="hidden" name="action" value="${not empty envoi ? 'modifier' : 'ajouter'}">
+                        <input type="hidden" name="action" value="${not empty envoyer ? 'modifier' : 'ajouter'}">
 
                         <div>
                             <label class="label">ID de la transaction</label>
-                            <input type="text" name="idEnv" value="${envoi.idEnv}" required
-                                class="input ${not empty envoi ? 'bg-gray-100 text-gray-400' : ''}"
-                                placeholder="Ex: ENV-2024-001" ${not empty envoi ? 'readonly' : '' }>
+                            <input type="text" name="idEnv" value="${envoyer.idEnv}" required
+                                class="input ${not empty envoyer ? 'bg-gray-100 text-gray-400' : ''}"
+                                placeholder="Ex: ENV-2024-001" ${not empty envoyer ? 'readonly' : '' }>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -32,8 +32,8 @@
                                 <select name="numEnvoyeur" class="select" required>
                                     <option value="">-- Choisir envoyeur --</option>
                                     <c:forEach var="c" items="${clients}">
-                                        <option value="${c.numtel}" ${envoi.numEnvoyeur==c.numtel ? 'selected' : '' }>
-                                            ${c.nom} (${c.numtel})
+                                        <option value="${c.numtel}" ${envoyer.numEnvoyeur == c.numtel ? 'selected' : '' }>
+                                            ${c.nom} (${c.numtel}) - ${c.pays}
                                         </option>
                                     </c:forEach>
                                 </select>
@@ -43,8 +43,8 @@
                                 <select name="numRecepteur" class="select" required>
                                     <option value="">-- Choisir récepteur --</option>
                                     <c:forEach var="c" items="${clients}">
-                                        <option value="${c.numtel}" ${envoi.numRecepteur==c.numtel ? 'selected' : '' }>
-                                            ${c.nom} (${c.numtel})
+                                        <option value="${c.numtel}" ${envoyer.numRecepteur==c.numtel ? 'selected' : '' }>
+                                            ${c.nom} (${c.numtel}) - ${c.pays}
                                         </option>
                                     </c:forEach>
                                 </select>
@@ -53,21 +53,21 @@
 
                         <div>
                             <label class="label">Montant à envoyer (€)</label>
-                            <input type="number" name="montant" value="${envoi.montant}" required
+                            <input type="number" name="montant" value="${envoyer.montant}" required
                                 class="input text-xl font-bold" placeholder="0.00">
                         </div>
 
                         <div>
                             <label class="label">Raison du transfert</label>
-                            <textarea name="reason" rows="2" class="textarea"
-                                placeholder="Ex: Cadeau, Factures...">${envoi.raison}</textarea>
+                            <textarea name="raison" rows="2" class="textarea"
+                                placeholder="Ex: Cadeau, Factures...">${envoyer.raison}</textarea>
                         </div>
 
                         <div class="flex items-center justify-between pt-6">
                             <a href="${ctx}/envois/list"
                                 class="text-gray-400 font-bold text-sm no-underline">Annuler</a>
                             <button type="submit" class="btn btn-accent shadow-lg shadow-yellow-200">
-                                ${empty envoi ? 'Confirmer l\'envoi' : 'Enregistrer'}
+                                ${empty envoyer ? 'Confirmer l\'envoi' : 'Enregistrer'}
                             </button>
                         </div>
                     </form>

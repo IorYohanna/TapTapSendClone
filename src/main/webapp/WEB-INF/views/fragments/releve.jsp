@@ -14,8 +14,14 @@
             <c:set var="ctx" value="${pageContext.request.contextPath}" />
             <c:set var="pageActive" value="releve" />
 
-            <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8">
+            <div
+                class="pointer-events-none fixed -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-accent blur-3xl opacity-60 z-0">
+            </div>
+            <div
+                class="pointer-events-none fixed -top-32 -left-32 h-[380px] w-[380px] rounded-full bg-accentSoft blur-3xl opacity-70 z-0">
+            </div>
 
+            <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8">
                 <div class="lg:w-72 flex-shrink-0">
                     <%@ include file="/WEB-INF/views/fragments/sidebar.jsp" %>
                 </div>
@@ -55,7 +61,6 @@
                         </form>
 
                         <div class="rounded-3xl border border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
-                            <div class="text-4xl mb-4">📊</div>
                             <h3 class="text-lg font-bold text-gray-400">Prêt à générer</h3>
                             <p class="text-sm text-gray-400 max-w-xs mx-auto">
                                 Sélectionnez un client et un mois ci-dessus pour obtenir l'historique détaillé des
@@ -63,12 +68,6 @@
                             </p>
                         </div>
 
-                        <div class="mt-10 pt-6 border-t border-gray-50">
-                            <a href="${ctx}/envois/list"
-                                class="text-sm text-gray-400 hover:text-black transition-colors flex items-center gap-2">
-                                <span>←</span> Retour à la liste des envois
-                            </a>
-                        </div>
                     </section>
                 </main>
             </div>

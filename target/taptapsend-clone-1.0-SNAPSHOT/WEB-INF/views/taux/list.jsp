@@ -1,101 +1,138 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+    <%@ taglib uri="jakarta.tags.core" prefix="c" %>
         <!DOCTYPE html>
         <html lang="fr">
 
         <head>
             <meta charset="UTF-8">
-            <title>MoneyFlow - Taux de change</title>
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
+            <title>Taux de change - MoneyFlow</title>
             <script src="https://cdn.tailwindcss.com"></script>
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
         </head>
 
-        <body style="background: #F4F2EC; padding: 2rem;">
+        <body class="min-h-screen bg-cream font-sans text-ink antialiased p-4 lg:p-8 overflow-x-hidden">
             <c:set var="ctx" value="${pageContext.request.contextPath}" />
-            <div class="max-w-5xl mx-auto">
-                <section class="card">
-                    <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
-                        <div>
-                            <div class="label" style="margin-bottom: 0;">Configuration</div>
-                            <h1 style="font-size: 2.5rem; font-weight: 800; color: #0B0B0B; line-height: 1;">Taux de
-                                change</h1>
-                            <p style="margin-top: 0.5rem; color: rgba(0,0,0,0.6); font-size: 0.9rem;">
-                                Gestion des taux de conversion pour les transferts internationaux.
+            <c:set var="pageActive" value="taux" />
+
+            <div
+                class="pointer-events-none fixed -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-accent blur-3xl opacity-60 z-0">
+            </div>
+            <div
+                class="pointer-events-none fixed -top-32 -left-32 h-[380px] w-[380px] rounded-full bg-accentSoft blur-3xl opacity-70 z-0">
+            </div>
+
+            <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-8 relative z-10">
+
+                <div class="lg:w-72 flex-shrink-0">
+                    <%@ include file="/WEB-INF/views/fragments/sidebar.jsp" %>
+                </div>
+
+                <main class="flex-1 min-w-0">
+                    <section class="custom-card">
+
+                        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                            <div>
+                                <span
+                                    class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Configuration</span>
+                                <h1 class="text-4xl font-black text-[#0B0B0B] mt-1">Taux de change</h1>
+                                <p class="text-gray-500 mt-2 text-sm">
+                                    Conversion de devises ·
+                                    <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">
+                                        ${liste.size()} taux actifs
+                                    </span>
+                                </p>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3">
+                                <div class="relative group">
+                                    <input id="rateSearch" onkeyup="filterRates()"
+                                        class="pl-10 pr-4 py-3 bg-gray-100 border-none rounded-full focus:ring-2 focus:ring-accent w-full md:w-64 transition-all"
+                                        placeholder="Chercher un pays...">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">🔍</span>
+                                </div>
+                                <a href="${ctx}/taux/form"
+                                    class="btn btn-accent px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2">
+                                    <span class="text-xl leading-none">+</span> Nouveau Taux
+                                </a>
+                            </div>
+                        </div>
+
+                        <c:if test="${not empty param.success}">
+                            <div class="toast success flex items-center gap-3 mb-6">
+                                <span>✅</span> Paramètres de change mis à jour !
+                            </div>
+                        </c:if>
+
+                        <div class="overflow-x-auto table-wrap">
+                            <table class="w-full text-left border-separate border-spacing-y-2">
+                                <thead>
+                                    <tr class="text-gray-400 text-[11px] uppercase tracking-widest font-bold">
+                                        <th class="px-4 pb-4">ID Taux</th>
+                                        <th class="px-4 pb-4">Conversion</th>
+                                        <th class="px-4 pb-4">Couloir (Origine → Dest)</th>
+                                        <th class="px-4 pb-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rateTableBody">
+                                    <c:forEach var="t" items="${liste}">
+                                        <tr class="group hover:bg-gray-50 transition-colors">
+                                            <td class="bg-gray-50 group-hover:bg-gray-100/50 rounded-l-2xl px-4 py-4">
+                                                <span class="badge badge-gray font-mono">${t.idtaux}</span>
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-gray-900">${t.montant1} unité</span>
+                                                    <span class="text-gray-300">=</span>
+                                                    <span
+                                                        class="badge badge-yellow font-black text-sm">${t.montant2}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <div class="text-sm font-semibold text-gray-600">
+                                                    ${t.pays1} <span class="text-gray-300 mx-1">→</span> ${t.pays2}
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-4 text-right rounded-r-2xl">
+                                                <div class="flex justify-center items-center gap-2">
+                                                    <a href="${ctx}/taux/form?idtaux=${t.idtaux}"
+                                                        class="btn btn-ghost !p-2 px-4 text-xs">Modifier</a>
+                                                    <a href="${ctx}/taux/delete?idtaux=${t.idtaux}"
+                                                        onclick="return confirm('Supprimer ?')"
+                                                        class="btn btn-danger !p-2 px-4 text-xs">Supprimer</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Aide Contextuelle -->
+                        <div class="mt-8 p-6 bg-accent/10 rounded-3xl border border-accent flex gap-4 items-center">
+                            <div class="text-2xl">💡</div>
+                            <p class="text-xs text-ink/70 leading-relaxed">
+                                <span class="font-bold">Aide :</span> Pour un couloir Europe vers Madagascar, définissez
+                                <span class="bg-white px-1 rounded">1</span> en Montant 1 et la valeur en Ariary (ex:
+                                <span class="bg-white px-1 rounded">4800</span>) en Montant 2.
                             </p>
                         </div>
-                        <a href="${pageContext.request.contextPath}/taux/form" class="btn btn-accent">
-                            <span>+</span> Nouveau taux
-                        </a>
-                    </div>
-
-                    <c:if test="${not empty param.success}">
-                        <div class="toast success" style="margin-bottom: 1.5rem; position: static; max-width: 100%;">
-                            Action réussie : L'opération a été effectuée avec succès.
-                        </div>
-                    </c:if>
-                    <c:if test="${not empty error}">
-                        <div class="toast error" style="margin-bottom: 1.5rem; position: static; max-width: 100%;">
-                            Erreur : ${error}
-                        </div>
-                    </c:if>
-
-                    <div class="table-wrap scroll-x">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ID Taux</th>
-                                    <th>Montant 1 (Réf)</th>
-                                    <th>Montant 2 (Destination)</th>
-                                    <th>pays 1 (Réf)</th>
-                                    <th>pays 2 (Destination)</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="t" items="${liste}">
-                                    <tr>
-                                        <td><span class="badge badge-gray">${t.idtaux}</span></td>
-                                        <td style="font-weight: 600;">${t.montant1}</td>
-                                        <td style="font-weight: 600;">${t.montant2}</td>
-                                        <td style="font-weight: 600;">${t.pays1}</td>
-                                        <td style="font-weight: 600;">${t.pays2}</td>
-                                        <td style="text-align: right;">
-                                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                                                <a href="${pageContext.request.contextPath}/taux/form?idtaux=${t.idtaux}"
-                                                    class="btn btn-ghost"
-                                                    style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Modifier</a>
-                                                <a href="${pageContext.request.contextPath}/taux/delete?idtaux=${t.idtaux}"
-                                                    class="btn btn-danger"
-                                                    style="padding: 0.4rem 0.8rem; font-size: 0.8rem;"
-                                                    onclick="return confirm('Supprimer ce taux ?')">Supprimer</a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                                <c:if test="${empty liste}">
-                                    <tr>
-                                        <td colspan="4"
-                                            style="text-align: center; padding: 3rem; color: rgba(0,0,0,0.4);">
-                                            Aucun taux de change configuré.
-                                        </td>
-                                    </tr>
-                                </c:if>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div
-                        style="margin-top: 1.5rem; padding: 1.25rem; border-radius: 18px; background: rgba(255,221,0,0.15); font-size: 0.85rem; color: #0B0B0B;">
-                        <strong>Aide :</strong> Pour un taux EUR vers MGA, montant1 = 1 et montant2 = 4800 (1€ = 4800
-                        Ar).
-                    </div>
-
-                    <a href="${ctx}/index.jsp"
-                        style="font-size: 0.8rem; color: rgba(0,0,0,0.4); text-decoration: none;">←
-                        Retour à l'accueil
-                    </a>
-                </section>
+                    </section>
+                </main>
             </div>
+
+            <script>
+                function filterRates() {
+                    const query = document.getElementById('rateSearch').value.toLowerCase();
+                    const rows = document.querySelectorAll('#rateTableBody tr');
+                    rows.forEach(row => {
+                        row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none";
+                    });
+                }
+            </script>
+
+            <c:if test="${showForm}">
+                <jsp:include page="form.jsp" />
+            </c:if>
 
         </body>
 

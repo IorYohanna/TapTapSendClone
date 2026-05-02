@@ -1,82 +1,64 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-        <!DOCTYPE html>
-        <html lang="fr">
+    <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+        <c:set var="ctx" value="${pageContext.request.contextPath}" />
+        <div class="modal-backdrop">
+            <div class="modal-panel">
+                <section class="card relative">
+                    <a href="${ctx}/taux/list"
+                        class="absolute top-6 right-6 text-gray-400 hover:text-black text-2xl no-underline">&times;</a>
 
-        <head>
-            <meta charset="UTF-8">
-            <title>MoneyFlow - ${not empty taux ? 'Modifier' : 'Nouveau'} Taux</title>
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/styles.css">
-            <script src="https://cdn.tailwindcss.com"></script>
-        </head>
-
-        <body style="background: #F4F2EC; padding: 2rem;">
-
-            <div class="max-w-xl mx-auto">
-                <section class="card">
                     <div class="mb-8">
-                        <div class="label">Formulaire</div>
-                        <h1 style="font-size: 2rem; font-weight: 800; color: #0B0B0B;">
-                            <c:choose>
-                                <c:when test="${not empty taux}">Modifier le taux</c:when>
-                                <c:otherwise>Nouveau taux</c:otherwise>
-                            </c:choose>
+                        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Configuration</div>
+                        <h1 class="font-display text-3xl text-ink font-black">
+                            ${empty taux ? 'Nouveau taux' : 'Modifier le taux'}
                         </h1>
+                        <p class="text-sm text-gray-500">Ajustez les valeurs de conversion entre les devises.</p>
                     </div>
 
-                    <c:if test="${not empty error}">
-                        <div class="toast error" style="margin-bottom: 1.5rem; position: static; max-width: 100%;">
-                            ${error}
-                        </div>
-                    </c:if>
-
-                    <form action="${pageContext.request.contextPath}/taux/save" method="post">
+                    <form action="${ctx}/taux/save" method="post" class="space-y-5">
                         <input type="hidden" name="action" value="${not empty taux ? 'modifier' : 'ajouter'}">
 
-                        <div style="margin-bottom: 1.5rem;">
+                        <div>
                             <label class="label">Identifiant du Taux (ID)</label>
-                            <input type="text" name="idtaux" value="${taux.idtaux}" required class="input"
-                                placeholder="Ex: EUR_MGA" <c:if test="${not empty taux}">readonly style="background:
-                            rgba(0,0,0,0.03); color: rgba(0,0,0,0.5);"</c:if>>
-                            <c:if test="${not empty taux}">
-                                <p style="font-size: 0.75rem; color: rgba(0,0,0,0.4); margin-top: 4px;">L'identifiant ne
-                                    peut pas être modifié.</p>
-                            </c:if>
+                            <input type="text" name="idtaux" value="${taux.idtaux}" required
+                                class="input ${not empty taux ? 'bg-gray-100 text-gray-400' : ''}"
+                                placeholder="Ex: EUR_MGA" ${not empty taux ? 'readonly' : '' }>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4" style="margin-bottom: 2rem;">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="label">Montant 1 (Unité)</label>
+                                <label class="label">Montant 1 (Référence)</label>
                                 <input type="number" name="montant1"
-                                    value="${taux.montant1 != null ? taux.montant1 : 1}" required class="input">
+                                    value="${taux.montant1 != null ? taux.montant1 : 1}" required class="input"
+                                    placeholder="1">
                             </div>
                             <div>
-                                <label class="label">Montant 2 (Valeur)</label>
-                                <input type="number" name="montant2" value="${taux.montant2}" required class="input">
-                            </div>
-                             <div>
-                                <label class="label">Montant 2 (Valeur)</label>
-                                <input type="text" name="pays1" value="${taux.pays1}" required class="input">
-                            </div>
-                             <div>
-                                <label class="label">Montant 2 (Valeur)</label>
-                                <input type="text" name="pays2" value="${taux.pays2}" required class="input">
+                                <label class="label">Montant 2 (Valeur cible)</label>
+                                <input type="number" name="montant2" value="${taux.montant2}" required class="input"
+                                    placeholder="4800">
                             </div>
                         </div>
 
-                        <div style="display: flex; gap: 12px;">
-                            <button type="submit" class="btn btn-primary" style="flex: 2; justify-content: center;">
-                                Enregistrer les modifications
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">Pays d'origine (Réf)</label>
+                                <input type="text" name="pays1" value="${taux.pays1}" required class="input"
+                                    placeholder="Ex: France">
+                            </div>
+                            <div>
+                                <label class="label">Pays de destination</label>
+                                <input type="text" name="pays2" value="${taux.pays2}" required class="input"
+                                    placeholder="Ex: Madagascar">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-6">
+                            <a href="${ctx}/taux/list" class="text-gray-400 font-bold text-sm no-underline">Annuler</a>
+                            <button type="submit" class="btn btn-accent shadow-lg shadow-yellow-200">
+                                Enregistrer le taux
                             </button>
-                            <a href="${pageContext.request.contextPath}/taux/list" class="btn btn-ghost"
-                                style="flex: 1; justify-content: center;">
-                                Annuler
-                            </a>
                         </div>
                     </form>
                 </section>
             </div>
-
-        </body>
-
-        </html>
+        </div>

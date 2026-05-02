@@ -32,8 +32,7 @@ public class ClientController extends HttpServlet {
 
         } else if (path.equals("/form")) {
             try {
-                List<Client> clients = clientDao.lister();
-                req.setAttribute("clients", clients);
+                req.setAttribute("clients", clientDao.lister());
             } catch (SQLException e) {
                 req.setAttribute("error", e.getMessage());
             }
@@ -50,7 +49,6 @@ public class ClientController extends HttpServlet {
 
             req.setAttribute("showForm", true);
             req.getRequestDispatcher("/WEB-INF/views/client/list.jsp").forward(req, res);
-
         } else if (path.equals("/delete")) {
             String numtel = req.getParameter("numtel");
 
@@ -64,13 +62,12 @@ public class ClientController extends HttpServlet {
 
         } else if (path.equals("/search")) {
             try {
-                List<Client> listes = clientDao.lister();
-                req.setAttribute("clients", listes);
+                List<Client> clients = clientDao.lister();
+                req.setAttribute("clients", clients);
+
             } catch (SQLException e) {
                 req.setAttribute("error", e.getMessage());
             }
-            
-
             req.getRequestDispatcher("/WEB-INF/views/client/search.jsp").forward(req, res);
         } else {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -87,7 +84,11 @@ public class ClientController extends HttpServlet {
             String nom = req.getParameter("nom");
             String sexe = req.getParameter("sexe");
             String pays = req.getParameter("pays");
-            int solde = Integer.parseInt(req.getParameter("solde"));
+            int solde = 0;
+            String soldeParam = req.getParameter("solde");
+            if (soldeParam != null && !soldeParam.isEmpty()) {
+                solde = Integer.parseInt(soldeParam);
+            }
             String email = req.getParameter("email");
             String action = req.getParameter("action");
 
@@ -103,7 +104,11 @@ public class ClientController extends HttpServlet {
             } catch (SQLException e) {
                 req.setAttribute("error", e.getMessage());
                 req.setAttribute("client", client);
-                req.getRequestDispatcher("/WEB-INF/views/client/form.jsp").forward(req, res);
+                try {
+                    req.setAttribute("clients", clientDao.lister());
+                } catch (SQLException ex) {
+                }
+                req.getRequestDispatcher("/WEB-INF/views/client/list.jsp").forward(req, res);
             }
 
         }

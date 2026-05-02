@@ -33,18 +33,25 @@ public class FraisController extends HttpServlet {
             handleList(req, res);
 
         } else if (path.equals("/form")) {
+            try {
+                req.setAttribute("liste", fraisDao.lister());
+            } catch (SQLException e) {
+                req.setAttribute("error", e.getMessage());
+            }
+
             String idfrais = req.getParameter("idfrais");
             if (idfrais != null && !idfrais.isEmpty()) {
                 try {
                     fraisDao.lister().stream()
-                        .filter(f -> f.getIdfrais().equals(idfrais))
-                        .findFirst()
-                        .ifPresent(f -> req.setAttribute("frais", f));
+                            .filter(f -> f.getIdfrais().equals(idfrais))
+                            .findFirst()
+                            .ifPresent(f -> req.setAttribute("frais", f));
                 } catch (SQLException e) {
                     req.setAttribute("error", e.getMessage());
                 }
             }
-            req.getRequestDispatcher("/WEB-INF/views/frais/form.jsp").forward(req, res);
+            req.setAttribute("showForm", true);
+            req.getRequestDispatcher("/WEB-INF/views/frais/list.jsp").forward(req, res);
 
         } else if (path.equals("/delete")) {
             String idfrais = req.getParameter("idfrais");
@@ -67,27 +74,31 @@ public class FraisController extends HttpServlet {
         String path = req.getPathInfo();
 
         if (path.equals("/save")) {
-            String idfrais  = req.getParameter("idfrais");
-            int    montant1 = Integer.parseInt(req.getParameter("montant1"));
-            int    montant2 = Integer.parseInt(req.getParameter("montant2"));
-            int    frais    = Integer.parseInt(req.getParameter("frais"));
-            String action   = req.getParameter("action");
+            String idfrais = req.getParameter("idfrais");
+            int montant1 = Integer.parseInt(req.getParameter("montant1"));
+            int montant2 = Integer.parseInt(req.getParameter("montant2"));
+            int frais = Integer.parseInt(req.getParameter("frais"));
+            String action = req.getParameter("action");
 
             try {
                 if ("modifier".equals(action)) {
                     FraisEnvoi f = new FraisEnvoi(idfrais, montant1, montant2, frais);
                     FraisDao.modifier(f, Map.of(
-                        "montant1", montant1,
-                        "montant2", montant2,
-                        "frais",    frais
-                    ));
+                            "montant1", montant1,
+                            "montant2", montant2,
+                            "frais", frais));
                 } else {
                     fraisDao.ajouter(idfrais, montant1, montant2, frais);
                 }
                 res.sendRedirect(req.getContextPath() + "/frais/list?success=" + action);
             } catch (Exception e) {
+                req.setAttribute("showForm", true);
                 req.setAttribute("error", e.getMessage());
-                req.getRequestDispatcher("/WEB-INF/views/frais/form.jsp").forward(req, res);
+                try {
+                    req.setAttribute("liste", fraisDao.lister());
+                } catch (SQLException ex) {
+                }
+                req.getRequestDispatcher("/WEB-INF/views/frais/list.jsp").forward(req, res);
             }
         }
     }

@@ -10,7 +10,7 @@
             </div>
             <div>
                 <div class="font-display text-lg leading-none">MoneyFlow</div>
-                <div class="text-[10px] uppercase p-4 tracking-[0.25em] text-white/50">Opérateur</div>
+                <div class="text-[10px] uppercase p-1.5 tracking-[0.25em] text-white/50">Opérateur</div>
             </div>
         </div>
 
@@ -22,7 +22,7 @@
                 <span class="nav-icon">◆</span> Clients
             </a>
             <a href="${ctx}/envois/list" class="nav-btn ${pageActive == 'envois' ? 'active' : ''}">
-                <span class="nav-icon">↗</span> Envois
+                <span class="nav-icon">-</span> Envois
             </a>
             <a href="${ctx}/taux/list" class="nav-btn ${pageActive == 'taux' ? 'active' : ''}">
                 <span class="nav-icon">⇌</span> Taux de change
@@ -34,13 +34,13 @@
 
         <div class="mt-10 pt-6 border-t border-white/10 text-center">
             <span class="text-xs text-white/40 font-mono tracking-wider">OUTILS</span>
-            <a href="${ctx}/releve/form" class="nav-btn ${pageActive == 'releve' ? 'active' : ''}">
+            <a href="${ctx}/releve/form" class="nav-btn m-4 ${pageActive == 'releve' ? 'active' : ''}">
                 <span class="nav-icon">▤</span> Relevés PDF
             </a>
-            <a href="${ctx}/recette" class="nav-btn ${pageActive == 'recette' ? 'active' : ''}">
+            <a href="${ctx}/recette" class="nav-btn m-4 ${pageActive == 'recette' ? 'active' : ''}">
                 <span class="nav-icon">$</span> Recette
             </a>
-            <a href="${ctx}/clients/search" class="nav-btn ${pageActive == 'search' ? 'active' : ''}">
+            <a href="${ctx}/clients/search" class="nav-btn m-4 ${pageActive == 'search' ? 'active' : ''}">
                 <span class="nav-icon">🔍</span> Recherche de clients
             </a>
         </div>

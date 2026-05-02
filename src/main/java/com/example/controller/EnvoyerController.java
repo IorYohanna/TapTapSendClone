@@ -20,6 +20,7 @@ public class EnvoyerController extends HttpServlet {
 
     private EnvoyerDao envoyerDao;
     private ClientDao clientDao;
+
     public void init() {
         envoyerDao = new EnvoyerDao();
         clientDao = new ClientDao();
@@ -53,7 +54,7 @@ public class EnvoyerController extends HttpServlet {
                     req.setAttribute("error", e.getMessage());
                 }
             }
-            req.setAttribute("showForm", true); 
+            req.setAttribute("showForm", true);
             req.getRequestDispatcher("/WEB-INF/views/envoyer/list.jsp").forward(req, res);
         } else if (path.equals("/delete")) {
 
@@ -88,10 +89,13 @@ public class EnvoyerController extends HttpServlet {
 
         if (path.equals("/save")) {
 
+            String action = req.getParameter("action"); 
+
             String idEnv = req.getParameter("idEnv");
             if (idEnv == null || idEnv.isEmpty()) {
                 idEnv = UUID.randomUUID().toString();
             }
+
             Envoyer env = new Envoyer(
                     idEnv,
                     req.getParameter("numEnvoyeur"),
@@ -101,13 +105,22 @@ public class EnvoyerController extends HttpServlet {
                     req.getParameter("raison"));
 
             try {
-                envoyerDao.envoyerArgent(env);
-                res.sendRedirect(req.getContextPath() + "/envois/list?success=add");
+                if ("modifier".equals(action)) {
+                    envoyerDao.modifier(env);
+                } else {
+                    envoyerDao.envoyerArgent(env);
+                }
+                res.sendRedirect(req.getContextPath() + "/envois/list?success=" + action);
 
             } catch (Exception e) {
+                req.setAttribute("showForm", true);
                 req.setAttribute("error", e.getMessage());
                 req.setAttribute("envoyer", env);
-                req.getRequestDispatcher("/WEB-INF/views/envoyer/form.jsp").forward(req, res);
+                try {
+                    req.setAttribute("clients", clientDao.lister());
+                } catch (SQLException ex) {
+                }
+                req.getRequestDispatcher("/WEB-INF/views/envoyer/list.jsp").forward(req, res);
             }
         }
     }

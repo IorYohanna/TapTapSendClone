@@ -46,34 +46,27 @@ public class FraisDao {
         return liste;
     }
 
-    public static void modifier(FraisEnvoi frais, Map<String, Object> data) {
-        if (data == null || data.isEmpty()) {
+    public static void modifier(FraisEnvoi frais, Map<String, Object> data) throws SQLException {
+        if (data == null || data.isEmpty())
             return;
-        }
 
-        StringBuilder sql = new StringBuilder("UPDATE \"FRAIS_ENVOI\" SET ");
+        StringBuilder sql = new StringBuilder("UPDATE frais_envoi SET ");
         List<Object> values = new ArrayList<>();
 
         data.forEach((column, value) -> {
-            sql.append(column).append(" = ? ,");
+            sql.append(column).append(" = ?, ");
             values.add(value);
         });
 
-        sql.setLength(sql.length() - 2);
+        sql.setLength(sql.length() - 2); 
         sql.append(" WHERE idfrais = ?");
-        values.add(frais.getFrais());
+        values.add(frais.getIdfrais()); 
 
         try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < values.size(); i++) {
                 stmt.setObject(i + 1, values.get(i));
             }
-
-            int rows = stmt.executeUpdate();
-            if (rows > 0) {
-                System.out.println("Mise a jour reussi de frais !");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            stmt.executeUpdate();
         }
     }
 
