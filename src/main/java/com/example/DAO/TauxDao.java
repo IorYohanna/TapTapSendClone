@@ -18,12 +18,14 @@ public class TauxDao {
         }
     }
 
-    public void ajouter(String idTaux, int montant1, int montant2) throws SQLException {
-        String sql = "INSERT INTO TAUX (idtaux, montant1, montant2) VALUES (?, ?, ?)";
+    public void ajouter(String idTaux, int montant1, int montant2, String pays1, String pays2) throws SQLException {
+        String sql = "INSERT INTO TAUX (idtaux, montant1, montant2, pays1, pays2) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, idTaux);
             ps.setInt(2, montant1);
             ps.setInt(3, montant2);
+            ps.setString(4, pays1);
+            ps.setString(5, pays2);
             ps.executeUpdate();
             System.out.println("Taux ajouté avec succès.");
         }
@@ -38,20 +40,24 @@ public class TauxDao {
                 String idtaux = rs.getString("idtaux");
                 int montant1 = rs.getInt("montant1");
                 int montant2 = rs.getInt("montant2");
+                String pays1 = rs.getString("pays1");
+                String pays2 = rs.getString("pays2");
 
-                Taux taux = new Taux(idtaux, montant1, montant2);
+                Taux taux = new Taux(idtaux, montant1, montant2, pays1,pays2);
                 liste.add(taux);
             }
         }
         return liste;
     }
 
-    public void modifier(String idTaux, int nouveauMontant1, int nouveauMontant2) throws SQLException {
-        String sql = "UPDATE TAUX SET montant1 = ?, montant2 = ? WHERE idtaux = ?";
+    public void modifier(String idTaux, int nouveauMontant1, int nouveauMontant2, String nouveauPays1, String nouveauPays2) throws SQLException {
+        String sql = "UPDATE TAUX SET montant1 = ?, montant2 = ?, pays1 = ?, pays2 = ? WHERE idtaux = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, nouveauMontant1);
             ps.setInt(2, nouveauMontant2);
-            ps.setString(3, idTaux);
+            ps.setString(3, nouveauPays1);
+            ps.setString(4, nouveauPays2);
+            ps.setString(5, idTaux);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Taux mis à jour avec succès.");
@@ -75,10 +81,10 @@ public class TauxDao {
     }
 
 
-    public int getValeurConversion(String idTaux) throws SQLException {
-        String sql = "SELECT montant2 FROM TAUX WHERE idtaux = ?";
+    public int getValeurConversion(String pays1) throws SQLException {
+        String sql = "SELECT montant2 FROM TAUX WHERE pays1 = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, idTaux);
+            ps.setString(1, pays1);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt("montant2");

@@ -12,7 +12,7 @@
             </head>
 
             <body style="background: #F4F2EC; padding: 2rem;">
-
+                 <c:set var="ctx" value="${pageContext.request.contextPath}" />
                 <div class="max-w-6xl mx-auto">
                     <section class="card">
                         <%-- Header avec Statistiques et Filtre --%>
@@ -121,6 +121,11 @@
                                             </c:if>
                                         </tbody>
                                     </table>
+
+                                    <a href="${ctx}/index.jsp"
+                                        style="font-size: 0.8rem; color: rgba(0,0,0,0.4); text-decoration: none;">←
+                                        Retour à l'accueil
+                                    </a>
                                 </div>
                     </section>
                 </div>

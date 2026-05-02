@@ -11,7 +11,7 @@
         </head>
 
         <body style="background: #F4F2EC; padding: 2rem;">
-
+            <c:set var="ctx" value="${pageContext.request.contextPath}" />
             <div class="max-w-5xl mx-auto">
                 <section class="card">
                     <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
@@ -90,6 +90,11 @@
                             <span class="font-bold">Exemple :</span> Entre 1 € et 100 € → frais = 5 € (L'utilisateur
                             paiera 105 € au total).
                         </div>
+
+                        <a href="${ctx}/index.jsp"
+                            style="font-size: 0.8rem; color: rgba(0,0,0,0.4); text-decoration: none;">←
+                            Retour à l'accueil
+                        </a>
                 </section>
             </div>
 

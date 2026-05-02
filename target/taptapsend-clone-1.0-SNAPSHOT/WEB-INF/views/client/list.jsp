@@ -96,8 +96,7 @@
                                                             <td><span class="badge badge-soft">${c.sexe}</span></td>
                                                             <td>${c.pays}</td>
                                                             <td style="color: rgba(0,0,0,0.5);">${c.email}</td>
-                                                            <td style="text-align: right; font-weight: 800;">${c.solde}
-                                                                €</td>
+                                                            <td style="text-align: right; font-weight: 800;">${c.solde}</td>
                                                             <td style="text-align: right;">
                                                                 <div
                                                                     style="display: flex; gap: 8px; justify-content: flex-end;">
@@ -122,7 +121,8 @@
                                     style="border-color: rgba(0,0,0,0.05);">
                                     <a href="${ctx}/index.jsp"
                                         style="font-size: 0.8rem; color: rgba(0,0,0,0.4); text-decoration: none;">←
-                                        Retour à l'accueil</a>
+                                        Retour à l'accueil
+                                    </a>
                                     <c:if test="${not empty keyword}">
                                         <a href="${ctx}/clients/list"
                                             style="font-size: 0.8rem; color: #3b82f6; font-weight: 600;">Réinitialiser

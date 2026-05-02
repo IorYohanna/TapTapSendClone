@@ -13,7 +13,7 @@ public class EnvoyerDao {
     private Connection conn;
 
     public EnvoyerDao() {
-         try {
+        try {
             this.conn = Db.getConnection();
         } catch (Exception e) {
             throw new RuntimeException("Erreur de connexion : " + e.getMessage(), e);
@@ -21,89 +21,87 @@ public class EnvoyerDao {
     }
 
     public void envoyerArgent(Envoyer env) throws Exception {
-
         try {
             conn.setAutoCommit(false);
 
-            PreparedStatement ps1 = conn.prepareStatement(
-                    "SELECT solde, pays FROM CLIENT WHERE numtel=?");
+            PreparedStatement ps1 = conn.prepareStatement("SELECT solde, pays FROM CLIENT WHERE numtel=?");
             ps1.setString(1, env.getNumEnvoyeur());
             ResultSet rs1 = ps1.executeQuery();
-
             if (!rs1.next())
                 throw new Exception("Envoyeur introuvable");
 
-            int solde = rs1.getInt("solde");
+            int soldeEnv = rs1.getInt("solde");
             String paysEnv = rs1.getString("pays");
 
-            PreparedStatement ps2 = conn.prepareStatement(
-                    "SELECT pays FROM CLIENT WHERE numtel=?");
+            PreparedStatement ps2 = conn.prepareStatement("SELECT pays FROM CLIENT WHERE numtel=?");
             ps2.setString(1, env.getNumRecepteur());
             ResultSet rs2 = ps2.executeQuery();
-
             if (!rs2.next())
-                throw new Exception("Recepteur introuvable");
+                throw new Exception("Récepteur introuvable");
 
             String paysRec = rs2.getString("pays");
 
             if (paysEnv.equals(paysRec)) {
-                throw new Exception("Transfert doit être international !");
+                throw new Exception("Le transfert doit être international !");
             }
 
             PreparedStatement ps3 = conn.prepareStatement(
                     "SELECT frais FROM FRAIS_ENVOI WHERE ? BETWEEN montant1 AND montant2");
             ps3.setInt(1, env.getMontant());
             ResultSet rs3 = ps3.executeQuery();
+            int fraisEuro = rs3.next() ? rs3.getInt("frais") : 0;
 
-            int frais = 0;
-            if (rs3.next())
-                frais = rs3.getInt("frais");
+            double tauxEnvoyeur = obtenirTauxPourPays(paysEnv);
+            double tauxRecepteur = obtenirTauxPourPays(paysRec);
 
-            if (solde < env.getMontant() + frais) {
-                throw new Exception("Solde insuffisant !");
+            int totalDebitLocal = (int) Math.round((env.getMontant() + fraisEuro) * tauxEnvoyeur);
+
+            int montantCreditLocal = (int) Math.round(env.getMontant() * tauxRecepteur);
+
+            if (soldeEnv < totalDebitLocal) {
+                throw new Exception("Solde insuffisant (Requis: " + totalDebitLocal + ")");
             }
 
-            Statement st = conn.createStatement();
-            ResultSet rs4 = st.executeQuery("SELECT montant2 FROM TAUX WHERE montant1=1");
-
-            int taux = 1;
-            if (rs4.next())
-                taux = rs4.getInt("montant2");
-
-            int montantConverti = env.getMontant() * taux;
-
-            PreparedStatement ps4 = conn.prepareStatement(
-                    "UPDATE CLIENT SET solde = solde - ? WHERE numtel=?");
-            ps4.setInt(1, env.getMontant() + frais);
+            PreparedStatement ps4 = conn.prepareStatement("UPDATE CLIENT SET solde = solde - ? WHERE numtel=?");
+            ps4.setInt(1, totalDebitLocal);
             ps4.setString(2, env.getNumEnvoyeur());
             ps4.executeUpdate();
 
-            
-            PreparedStatement ps5 = conn.prepareStatement(
-                    "UPDATE CLIENT SET solde = solde + ? WHERE numtel=?");
-            ps5.setInt(1, montantConverti);
+            PreparedStatement ps5 = conn.prepareStatement("UPDATE CLIENT SET solde = solde + ? WHERE numtel=?");
+            ps5.setInt(1, montantCreditLocal);
             ps5.setString(2, env.getNumRecepteur());
             ps5.executeUpdate();
 
-           
-            PreparedStatement ps6 = conn.prepareStatement(
-                    "INSERT INTO ENVOYER VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement ps6 = conn.prepareStatement("INSERT INTO ENVOYER VALUES (?, ?, ?, ?, ?, ?)");
             ps6.setString(1, env.getIdEnv());
             ps6.setString(2, env.getNumEnvoyeur());
             ps6.setString(3, env.getNumRecepteur());
-            ps6.setInt(4, env.getMontant());
+            ps6.setInt(4, env.getMontant()); 
             ps6.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             ps6.setString(6, env.getRaison());
             ps6.executeUpdate();
 
             conn.commit();
-
         } catch (Exception e) {
             conn.rollback();
             throw e;
         }
     }
 
+    private double obtenirTauxPourPays(String pays) throws SQLException {
+        if (pays.equalsIgnoreCase("France"))
+            return 1.0;
+
+        String sql = "SELECT montant1, montant2 FROM TAUX WHERE pays2 = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, pays);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return (double) rs.getInt("montant2") / rs.getInt("montant1");
+            }
+        }
+        return 1.0; 
+    }
 
     public List<Envoyer> lister() throws SQLException {
         List<Envoyer> list = new ArrayList<>();
@@ -150,7 +148,6 @@ public class EnvoyerDao {
         ps.setString(2, env.getIdEnv());
         ps.executeUpdate();
     }
-
 
     public void supprimer(String id) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(

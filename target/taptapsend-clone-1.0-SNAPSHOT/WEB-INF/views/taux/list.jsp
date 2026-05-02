@@ -11,7 +11,7 @@
         </head>
 
         <body style="background: #F4F2EC; padding: 2rem;">
-
+            <c:set var="ctx" value="${pageContext.request.contextPath}" />
             <div class="max-w-5xl mx-auto">
                 <section class="card">
                     <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
@@ -46,6 +46,8 @@
                                     <th>ID Taux</th>
                                     <th>Montant 1 (Réf)</th>
                                     <th>Montant 2 (Destination)</th>
+                                    <th>pays 1 (Réf)</th>
+                                    <th>pays 2 (Destination)</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -55,6 +57,8 @@
                                         <td><span class="badge badge-gray">${t.idtaux}</span></td>
                                         <td style="font-weight: 600;">${t.montant1}</td>
                                         <td style="font-weight: 600;">${t.montant2}</td>
+                                        <td style="font-weight: 600;">${t.pays1}</td>
+                                        <td style="font-weight: 600;">${t.pays2}</td>
                                         <td style="text-align: right;">
                                             <div style="display: flex; gap: 8px; justify-content: flex-end;">
                                                 <a href="${pageContext.request.contextPath}/taux/form?idtaux=${t.idtaux}"
@@ -85,6 +89,11 @@
                         <strong>Aide :</strong> Pour un taux EUR vers MGA, montant1 = 1 et montant2 = 4800 (1€ = 4800
                         Ar).
                     </div>
+
+                    <a href="${ctx}/index.jsp"
+                        style="font-size: 0.8rem; color: rgba(0,0,0,0.4); text-decoration: none;">←
+                        Retour à l'accueil
+                    </a>
                 </section>
             </div>
 

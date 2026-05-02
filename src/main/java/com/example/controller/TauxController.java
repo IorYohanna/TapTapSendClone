@@ -70,13 +70,15 @@ public class TauxController extends HttpServlet {
             String idtaux   = req.getParameter("idtaux");
             int    montant1 = Integer.parseInt(req.getParameter("montant1"));
             int    montant2 = Integer.parseInt(req.getParameter("montant2"));
+            String pays1 = req.getParameter("pays1");
+            String pays2 = req.getParameter("pays2");
             String action   = req.getParameter("action");
 
             try {
                 if ("modifier".equals(action)) {
-                    tauxDao.modifier(idtaux, montant1, montant2);
+                    tauxDao.modifier(idtaux, montant1, montant2, pays1, pays2);
                 } else {
-                    tauxDao.ajouter(idtaux, montant1, montant2);
+                    tauxDao.ajouter(idtaux, montant1, montant2, pays1, pays2);
                 }
                 res.sendRedirect(req.getContextPath() + "/taux/list?success=" + action);
             } catch (SQLException e) {

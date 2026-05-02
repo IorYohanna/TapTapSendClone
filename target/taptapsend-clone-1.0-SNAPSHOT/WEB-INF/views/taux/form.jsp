@@ -54,6 +54,14 @@
                                 <label class="label">Montant 2 (Valeur)</label>
                                 <input type="number" name="montant2" value="${taux.montant2}" required class="input">
                             </div>
+                             <div>
+                                <label class="label">Montant 2 (Valeur)</label>
+                                <input type="text" name="pays1" value="${taux.pays1}" required class="input">
+                            </div>
+                             <div>
+                                <label class="label">Montant 2 (Valeur)</label>
+                                <input type="text" name="pays2" value="${taux.pays2}" required class="input">
+                            </div>
                         </div>
 
                         <div style="display: flex; gap: 12px;">
