@@ -19,6 +19,14 @@ public class ClientDao {
     }
 
     public void ajouter(Client c) throws SQLException {
+        String check = "SELECT COUNT(*) FROM CLIENT WHERE email = ?";
+        try (PreparedStatement ps = conn.prepareStatement(check)) {
+            ps.setString(1, c.getEmail());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new SQLException("Cet email est déjà utilisé par un autre client.");
+            }
+        }
         String sql = "INSERT INTO CLIENT (numtel, nom, sexe, pays, solde, email) VALUES (?,?,?,?,?,?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, c.getNumtel());
@@ -56,6 +64,15 @@ public class ClientDao {
     }
 
     public void modifier(Client c) throws SQLException {
+        String check = "SELECT COUNT(*) FROM CLIENT WHERE email = ? AND numtel != ?";
+        try (PreparedStatement ps = conn.prepareStatement(check)) {
+            ps.setString(1, c.getEmail());
+            ps.setString(2, c.getNumtel());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new SQLException("Cet email est déjà utilisé par un autre client.");
+            }
+        }
         String sql = "UPDATE CLIENT SET nom=?, sexe=?, pays=?, solde=?, email=? WHERE numtel=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, c.getNom());

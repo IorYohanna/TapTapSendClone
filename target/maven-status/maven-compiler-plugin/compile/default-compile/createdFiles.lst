@@ -12,6 +12,7 @@ com\example\controller\EnvoyerController.class
 com\example\model\FraisEnvoi.class
 com\example\model\Taux.class
 com\example\DAO\EnvoyerDao.class
+com\example\controller\DashboardController.class
 com\example\DAO\TauxDao.class
 com\example\controller\ReleveController.class
 com\example\model\Envoyer.class

@@ -57,12 +57,6 @@
                                 </div>
                             </div>
 
-                            <c:if test="${not empty param.success}">
-                                <div class="toast success flex items-center gap-3 mb-6">
-                                    <span>✅</span> Transaction traitée avec succès !
-                                </div>
-                            </c:if>
-
                             <div class="table-wrap overflow-hidden">
                                 <table class="w-full text-left">
                                     <thead>
@@ -89,13 +83,15 @@
                                                     <div class="text-sm text-gray-500 italic truncate max-w-[150px]">
                                                         ${e.raison}</div>
                                                 </td>
-                                                <td class="px-4 py-4 text-right">
-                                                    <div class="flex justify-end gap-2">
+                                                <td class="px-4 py-4 text-center">
+                                                    <div class="flex justify-center items-center gap-2">
                                                         <a href="${ctx}/envois/form?idEnv=${e.idEnv}"
                                                             class="btn btn-ghost py-1 px-3 text-xs">Détails</a>
-                                                        <a href="${ctx}/envois/delete?idEnv=${e.idEnv}"
-                                                            onclick="return confirm('Supprimer?')"
-                                                            class="btn btn-danger py-1 px-3 text-xs">Supprimer</a>
+                                                        <button type="button"
+                                                            onclick="openDeleteModal('${ctx}/envois/delete?idEnv=${e.idEnv}', 'Supprimer l\'envoi ${e.idEnv} ?')"
+                                                            class="btn btn-danger !p-2 px-4 text-xs">
+                                                            Supprimer
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -111,6 +107,9 @@
                 <c:if test="${showForm}">
                     <jsp:include page="form.jsp" />
                 </c:if>
+                <script src="${pageContext.request.contextPath}/js/delete.js"></script>
+                <%@ include file="/WEB-INF/views/fragments/toast.jsp" %>
+                    <%@ include file="/WEB-INF/views/fragments/deleteModal.jsp" %>
 
             </body>
 

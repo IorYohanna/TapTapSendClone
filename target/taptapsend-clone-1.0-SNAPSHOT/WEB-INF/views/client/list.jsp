@@ -63,13 +63,15 @@
                                             </td>
                                             <td class="px-4 py-4 font-bold">${c.nom}</td>
                                             <td class="px-4 py-4 text-sm text-gray-500">${c.pays}</td>
-                                            <td class="px-4 py-4 text-right font-black">${c.solde}</td>
-                                            <td class="px-4 py-4 text-right rounded-r-2xl">
+                                            <td class="px-4 py-4 text-center font-black">${c.solde}</td>
+                                            <td class="px-4 py-4 text-center rounded-r-2xl">
                                                 <a href="${ctx}/clients/form?numtel=${c.numtel}"
                                                     class="btn btn-ghost !p-2 px-4 text-xs">Modifier</a>
-                                                <a href="${ctx}/clients/delete?numtel=${c.numtel}"
-                                                    onclick="return confirm('Supprimer ?')"
-                                                    class="btn btn-danger !p-2 px-4 text-xs">Supprimer</a>
+                                                <button type="button"
+                                                    onclick="openDeleteModal('${ctx}/clients/delete?numtel=${c.numtel}', 'Supprimer le client ${c.nom} ?')"
+                                                    class="btn btn-danger !p-2 px-4 text-xs">
+                                                    Supprimer
+                                                </button>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -79,9 +81,14 @@
                     </section>
                 </main>
             </div>
+
             <c:if test="${showForm}">
                 <jsp:include page="form.jsp" />
             </c:if>
+            <script src="${pageContext.request.contextPath}/js/delete.js"></script>
+            <%@ include file="/WEB-INF/views/fragments/toast.jsp" %>
+                <%@ include file="/WEB-INF/views/fragments/deleteModal.jsp" %>
+
         </body>
 
         </html>

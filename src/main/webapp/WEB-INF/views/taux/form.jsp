@@ -42,13 +42,19 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="label">Pays d'origine (Réf)</label>
-                                <input type="text" name="pays1" value="${taux.pays1}" required class="input"
-                                    placeholder="Ex: France">
+                                <select name="pays1" class="select" required>
+                                    <jsp:include page="/WEB-INF/views/fragments/pays.jsp">
+                                        <jsp:param name="selected" value="${taux.pays1}" />
+                                    </jsp:include>
+                                </select>
                             </div>
                             <div>
                                 <label class="label">Pays de destination</label>
-                                <input type="text" name="pays2" value="${taux.pays2}" required class="input"
-                                    placeholder="Ex: Madagascar">
+                                <select name="pays2" class="select" required>
+                                    <jsp:include page="/WEB-INF/views/fragments/pays.jsp">
+                                        <jsp:param name="selected" value="${taux.pays2}" />
+                                    </jsp:include>
+                                </select>
                             </div>
                         </div>
 

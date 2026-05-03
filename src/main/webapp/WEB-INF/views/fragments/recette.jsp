@@ -66,15 +66,18 @@
                         </section>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="card">
-                                <div class="text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-bold">Analyse
+                            <div class="card bg-black text-white">
+                                <div class="text-[10px] uppercase tracking-widest text-white/50 mb-2 font-bold">Panier
+                                    Moyen</div>
+                                <div class="font-display text-4xl font-black text-accent mb-2">
+                                    ${totalVolume / totalTransactions} €
                                 </div>
-                                <div class="font-display text-xl font-bold mb-4">Recette par mois</div>
-                                <div class="h-32 flex items-end gap-2 px-2">
-                                    <div class="flex-1 bg-accent rounded-t-lg h-[40%]"></div>
-                                    <div class="flex-1 bg-accent rounded-t-lg h-[60%]"></div>
-                                    <div class="flex-1 bg-accent rounded-t-lg h-[85%]"></div>
-                                    <div class="flex-1 bg-accent rounded-t-lg h-[50%]"></div>
+                                <p class="text-xs text-white/40 leading-relaxed">
+                                    C'est le montant moyen envoyé par transaction sur l'ensemble de vos opérations.
+                                </p>
+                                <div class="mt-6 pt-6 border-t border-white/10 flex justify-between">
+                                    <span class="text-[10px] font-bold text-white/30 uppercase">Rentabilité</span>
+                                    <span class="text-[10px] font-bold text-accent uppercase">+12% ce mois</span>
                                 </div>
                             </div>
                             <div class="card">

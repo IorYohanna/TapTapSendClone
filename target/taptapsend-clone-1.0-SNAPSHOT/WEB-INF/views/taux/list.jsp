@@ -45,10 +45,9 @@
 
                             <div class="flex flex-wrap gap-3">
                                 <div class="relative group">
-                                    <input id="rateSearch" onkeyup="filterRates()"
+                                    <input id="feeSearch" onkeyup="filterFees()"
                                         class="pl-10 pr-4 py-3 bg-gray-100 border-none rounded-full focus:ring-2 focus:ring-accent w-full md:w-64 transition-all"
                                         placeholder="Chercher un pays...">
-                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">🔍</span>
                                 </div>
                                 <a href="${ctx}/taux/form"
                                     class="btn btn-accent px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2">
@@ -56,12 +55,6 @@
                                 </a>
                             </div>
                         </div>
-
-                        <c:if test="${not empty param.success}">
-                            <div class="toast success flex items-center gap-3 mb-6">
-                                <span>✅</span> Paramètres de change mis à jour !
-                            </div>
-                        </c:if>
 
                         <div class="overflow-x-auto table-wrap">
                             <table class="w-full text-left border-separate border-spacing-y-2">
@@ -73,7 +66,7 @@
                                         <th class="px-4 pb-4 text-right">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="rateTableBody">
+                                <tbody id="feeTableBody">
                                     <c:forEach var="t" items="${liste}">
                                         <tr class="group hover:bg-gray-50 transition-colors">
                                             <td class="bg-gray-50 group-hover:bg-gray-100/50 rounded-l-2xl px-4 py-4">
@@ -92,13 +85,15 @@
                                                     ${t.pays1} <span class="text-gray-300 mx-1">→</span> ${t.pays2}
                                                 </div>
                                             </td>
-                                            <td class="px-4 py-4 text-right rounded-r-2xl">
+                                            <td class="px-4 py-4 text-center rounded-r-2xl">
                                                 <div class="flex justify-center items-center gap-2">
                                                     <a href="${ctx}/taux/form?idtaux=${t.idtaux}"
                                                         class="btn btn-ghost !p-2 px-4 text-xs">Modifier</a>
-                                                    <a href="${ctx}/taux/delete?idtaux=${t.idtaux}"
-                                                        onclick="return confirm('Supprimer ?')"
-                                                        class="btn btn-danger !p-2 px-4 text-xs">Supprimer</a>
+                                                    <button type="button"
+                                                        onclick="openDeleteModal('${ctx}/taux/delete?idtaux=${t.idtaux}', 'Supprimer le taux ${t.idtaux} ?')"
+                                                        class="btn btn-danger !p-2 px-4 text-xs">
+                                                        Supprimer
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -107,32 +102,28 @@
                             </table>
                         </div>
 
-                        <!-- Aide Contextuelle -->
-                        <div class="mt-8 p-6 bg-accent/10 rounded-3xl border border-accent flex gap-4 items-center">
+                        <div class="mt-8 p-6 badge-soft rounded-3xl border border-[#fff3a3] flex gap-4 items-center">
                             <div class="text-2xl">💡</div>
                             <p class="text-xs text-ink/70 leading-relaxed">
                                 <span class="font-bold">Aide :</span> Pour un couloir Europe vers Madagascar, définissez
-                                <span class="bg-white px-1 rounded">1</span> en Montant 1 et la valeur en Ariary (ex:
-                                <span class="bg-white px-1 rounded">4800</span>) en Montant 2.
+                                <span class="badge badge-gray px-1 rounded">1</span> en Montant 1 et la valeur en Ariary
+                                (ex:
+                                <span class="badge badge-gray px-1 rounded">4800</span>) en Montant 2.
                             </p>
                         </div>
                     </section>
                 </main>
             </div>
 
-            <script>
-                function filterRates() {
-                    const query = document.getElementById('rateSearch').value.toLowerCase();
-                    const rows = document.querySelectorAll('#rateTableBody tr');
-                    rows.forEach(row => {
-                        row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none";
-                    });
-                }
-            </script>
 
             <c:if test="${showForm}">
                 <jsp:include page="form.jsp" />
             </c:if>
+            <script src="${pageContext.request.contextPath}/js/search.js"></script>
+            <script src="${pageContext.request.contextPath}/js/delete.js"></script>
+            <%@ include file="/WEB-INF/views/fragments/toast.jsp" %>
+                <%@ include file="/WEB-INF/views/fragments/deleteModal.jsp" %>
+
 
         </body>
 

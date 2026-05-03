@@ -48,7 +48,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="label">Pays</label>
-                                <input type="text" name="pays" value="${client.pays}" required class="input" />
+                                <select name="pays" class="select" required>
+                                    <jsp:include page="/WEB-INF/views/fragments/pays.jsp">
+                                        <jsp:param name="selected" value="${client.pays}" />
+                                    </jsp:include>
+                                </select>
                             </div>
                             <div>
                                 <label class="label">Solde</label>

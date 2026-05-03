@@ -324,4 +324,18 @@ public class EnvoyerDao {
         return infos;
     }
 
+    public int getTotalVolume() throws SQLException {
+        String sql = "SELECT COALESCE(SUM(montant), 0) FROM ENVOYER";
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
+    public int getTotalFrais() throws SQLException {
+        String sql = "SELECT COALESCE(SUM(f.frais), 0) FROM ENVOYER e JOIN FRAIS_ENVOI f ON e.montant BETWEEN f.montant1 AND f.montant2";
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
+    }
+
 }

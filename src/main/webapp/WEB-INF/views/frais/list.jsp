@@ -48,7 +48,6 @@
                                     <input id="feeSearch" onkeyup="filterFees()"
                                         class="pl-10 pr-4 py-3 bg-gray-100 border-none rounded-full focus:ring-2 focus:ring-accent w-full md:w-64 transition-all"
                                         placeholder="Recherche rapide...">
-                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40">🔍</span>
                                 </div>
                                 <a href="${ctx}/frais/form"
                                     class="btn btn-accent px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2">
@@ -56,12 +55,6 @@
                                 </a>
                             </div>
                         </div>
-
-                        <c:if test="${not empty param.success}">
-                            <div class="toast success flex items-center gap-3 mb-6">
-                                <span>✅</span> Grille des frais mise à jour avec succès !
-                            </div>
-                        </c:if>
 
                         <div class="overflow-x-auto table-wrap">
                             <table class="w-full text-left border-separate border-spacing-y-2">
@@ -89,13 +82,15 @@
                                             <td class="px-4 py-4">
                                                 <span class="badge badge-yellow text-sm font-black">${f.frais} €</span>
                                             </td>
-                                            <td class="px-4 py-4 rounded-r-2xl">
+                                            <td class="px-4 py-4 text-center rounded-r-2xl">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <a href="${ctx}/frais/form?idfrais=${f.idfrais}"
                                                         class="btn btn-ghost !p-2 px-4 text-xs">Modifier</a>
-                                                    <a href="${ctx}/frais/delete?idfrais=${f.idfrais}"
-                                                        onclick="return confirm('Supprimer ?')"
-                                                        class="btn btn-danger !p-2 px-4 text-xs">Supprimer</a>
+                                                    <button type="button"
+                                                        onclick="openDeleteModal('${ctx}/frais/delete?idfrais=${f.idfrais}', 'Supprimer le frais ${f.idfrais} ?')"
+                                                        class="btn btn-danger !p-2 px-4 text-xs">
+                                                        Supprimer
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -104,8 +99,7 @@
                             </table>
                         </div>
 
-                        <div
-                            class="mt-8 p-6 bg-accentSoft/30 rounded-3xl border border-accentSoft flex gap-4 items-center">
+                        <div class="mt-8 p-6 badge-soft rounded-3xl border border-[#fff3a3] flex gap-4 items-center">
                             <div class="text-2xl">💡</div>
                             <p class="text-xs text-ink/70 leading-relaxed">
                                 <span class="font-bold">Règle de calcul :</span> Le système applique les frais de la
@@ -116,18 +110,14 @@
                 </main>
             </div>
 
-            <script>
-                function filterFees() {
-                    const query = document.getElementById('feeSearch').value.toLowerCase();
-                    const rows = document.querySelectorAll('#feeTableBody tr');
-                    rows.forEach(row => {
-                        row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none";
-                    });
-                }
-            </script>
             <c:if test="${showForm}">
                 <jsp:include page="form.jsp" />
             </c:if>
+            <script src="${pageContext.request.contextPath}/js/search.js"></script>
+            <script src="${pageContext.request.contextPath}/js/delete.js"></script>
+            <%@ include file="/WEB-INF/views/fragments/toast.jsp" %>
+                <%@ include file="/WEB-INF/views/fragments/deleteModal.jsp" %>
+
 
         </body>
 

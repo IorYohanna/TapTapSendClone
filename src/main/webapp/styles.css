@@ -241,30 +241,29 @@
 .toast {
   background: #0b0b0b;
   color: white;
-  padding: 14px 18px;
-  border-radius: 16px;
+  padding: 16px 20px;
+  border-radius: 18px;
   font-size: 14px;
-  max-width: 380px;
-  box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.4);
-  animation: slideInRight 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  border-left: 4px solid #ffdd00;
+  min-width: 300px;
+  max-width: 450px;
+  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.4);
+  border-left: 5px solid #ffdd00;
+
+  animation: slideInRight 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, opacity;
 }
+
 .toast.success {
   border-left-color: #22c55e;
 }
 .toast.error {
   border-left-color: #ef4444;
 }
-.toast.email {
-  border-left-color: #ffdd00;
-  background: #ffdd00;
-  color: #0b0b0b;
-  border-left: 4px solid #0b0b0b;
-}
+
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(40px);
+    transform: translateX(100px);
   }
   to {
     opacity: 1;
