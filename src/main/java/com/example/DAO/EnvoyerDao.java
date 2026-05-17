@@ -20,12 +20,26 @@ public class EnvoyerDao {
     public EnvoyerDao() {
         try {
             this.conn = Db.getConnection();
+            if (!this.conn.getAutoCommit()) {
+                this.conn.rollback();
+                this.conn.setAutoCommit(true);
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Erreur de connexion : " + e.getMessage(), e);
+            throw new RuntimeException("Impossible d'établir la connexion à la base de données : " + e.getMessage(), e);
         }
     }
 
     public void envoyerArgent(Envoyer env) throws Exception {
+
+        String checkId = "SELECT COUNT(*) FROM ENVOYER WHERE idEnv = ?";
+        try (PreparedStatement ps = conn.prepareStatement(checkId)) {
+            ps.setString(1, env.getIdEnv());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new Exception("L'ID de transaction « " + env.getIdEnv() + " » existe déjà.");
+            }
+        }
+        
         try {
             conn.setAutoCommit(false);
             PreparedStatement ps1 = conn.prepareStatement(
@@ -214,7 +228,7 @@ public class EnvoyerDao {
 
     public List<Envoyer> lister() throws SQLException {
         List<Envoyer> list = new ArrayList<>();
-        String sql = "SELECT * FROM ENVOYER ORDER BY date DESC";
+        String sql = "SELECT * FROM ENVOYER ORDER BY date ASC";
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {

@@ -101,14 +101,9 @@ public class ClientController extends HttpServlet {
                     clientDao.ajouter(client);
                 }
                 res.sendRedirect(req.getContextPath() + "/clients/list?success=" + action);
-            } catch (SQLException e) {
-                req.setAttribute("error", e.getMessage());
-                req.setAttribute("client", client);
-                try {
-                    req.setAttribute("clients", clientDao.lister());
-                } catch (SQLException ex) {
-                }
-                req.getRequestDispatcher("/WEB-INF/views/client/list.jsp").forward(req, res);
+            } catch (Exception e) {
+                res.sendRedirect(req.getContextPath() + "/clients/list?error=" +
+                        java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
             }
 
         }

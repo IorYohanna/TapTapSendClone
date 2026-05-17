@@ -77,4 +77,10 @@ public class Envoyer {
         return this.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
+    public String getIsoDate() {
+        if (this.date == null)
+            return "";
+        return this.date.toString();
+    }
+
 }

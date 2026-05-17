@@ -84,14 +84,9 @@ public class TauxController extends HttpServlet {
                     tauxDao.ajouter(idtaux, montant1, montant2, pays1, pays2);
                 }
                 res.sendRedirect(req.getContextPath() + "/taux/list?success=" + action);
-            } catch (SQLException e) {
-                req.setAttribute("showForm", true);
-                req.setAttribute("error", e.getMessage());
-                try {
-                    req.setAttribute("liste", tauxDao.lister());
-                } catch (SQLException ex) {
-                }
-                req.getRequestDispatcher("/WEB-INF/views/taux/list.jsp").forward(req, res);
+            } catch (Exception e) {
+                res.sendRedirect(req.getContextPath() + "/taux/list?error=" +
+                        java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
             }
         }
     }

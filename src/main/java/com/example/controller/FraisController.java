@@ -83,7 +83,7 @@ public class FraisController extends HttpServlet {
             try {
                 if ("modifier".equals(action)) {
                     FraisEnvoi f = new FraisEnvoi(idfrais, montant1, montant2, frais);
-                    FraisDao.modifier(f, Map.of(
+                    fraisDao.modifier(f, Map.of(
                             "montant1", montant1,
                             "montant2", montant2,
                             "frais", frais));
@@ -92,13 +92,8 @@ public class FraisController extends HttpServlet {
                 }
                 res.sendRedirect(req.getContextPath() + "/frais/list?success=" + action);
             } catch (Exception e) {
-                req.setAttribute("showForm", true);
-                req.setAttribute("error", e.getMessage());
-                try {
-                    req.setAttribute("liste", fraisDao.lister());
-                } catch (SQLException ex) {
-                }
-                req.getRequestDispatcher("/WEB-INF/views/frais/list.jsp").forward(req, res);
+                res.sendRedirect(req.getContextPath() + "/frais/list?error=" +
+                        java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
             }
         }
     }

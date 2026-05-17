@@ -89,7 +89,7 @@ public class EnvoyerController extends HttpServlet {
 
         if (path.equals("/save")) {
 
-            String action = req.getParameter("action"); 
+            String action = req.getParameter("action");
 
             String idEnv = req.getParameter("idEnv");
             if (idEnv == null || idEnv.isEmpty()) {
@@ -113,14 +113,8 @@ public class EnvoyerController extends HttpServlet {
                 res.sendRedirect(req.getContextPath() + "/envois/list?success=" + action);
 
             } catch (Exception e) {
-                req.setAttribute("showForm", true);
-                req.setAttribute("error", e.getMessage());
-                req.setAttribute("envoyer", env);
-                try {
-                    req.setAttribute("clients", clientDao.lister());
-                } catch (SQLException ex) {
-                }
-                req.getRequestDispatcher("/WEB-INF/views/envoyer/list.jsp").forward(req, res);
+                res.sendRedirect(req.getContextPath() + "/envois/list?error=" +
+                        java.net.URLEncoder.encode(e.getMessage(), "UTF-8"));
             }
         }
     }

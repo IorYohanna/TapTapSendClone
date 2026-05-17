@@ -42,6 +42,8 @@
                         <div>
                             <label class="label">Adresse Email</label>
                             <input type="email" name="email" value="${client.email}" required
+                                pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                title="Veuillez entrer une adresse email valide contenant un '@' et un domaine avec un point (ex: exemple@domaine.com)"
                                 placeholder="email@exemple.com" class="input" />
                         </div>
 
