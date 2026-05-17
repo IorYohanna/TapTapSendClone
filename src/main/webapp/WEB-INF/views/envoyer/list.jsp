@@ -38,22 +38,35 @@
                                     <h1 class="text-4xl font-black text-[#0B0B0B] mt-1">Envois d'argent</h1>
                                     <p class="text-gray-500 mt-2 text-sm">
                                         Historique des transferts ·
-                                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">
+                                        <span id="txCount"
+                                            class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">
                                             ${envoyers != null ? envoyers.size() : 0} transactions
                                         </span>
                                     </p>
                                 </div>
 
-                                <div class="flex flex-wrap gap-3">
-                                    <form action="${ctx}/envois/search" method="get" class="flex gap-2">
-                                        <input type="date" name="date" value="${dateRecherche}"
-                                            class="input py-2 rounded-full border-none bg-gray-100">
-                                        <button type="submit" class="btn btn-ghost !p-2 px-4">Filtrer</button>
-                                    </form>
-                                    <a href="${ctx}/envois/form"
-                                        class="btn btn-accent px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2">
-                                        <span class="text-xl leading-none">+</span> Nouvel envoi
-                                    </a>
+                                <div class="flex flex-wrap gap-3 items-center">
+
+                                    <%-- Filtre date dynamique — plus de form ni de bouton "Filtrer" --%>
+                                        <div class="flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <input type="date" id="dateFilter" value="${dateRecherche}"
+                                                class="bg-transparent text-sm text-gray-600 outline-none cursor-pointer">
+                                            <button id="clearDate" title="Effacer le filtre"
+                                                class="text-gray-400 hover:text-red-400 transition-colors hidden text-xl leading-none font-light">
+                                                &times;
+                                            </button>
+                                        </div>
+
+                                        <a href="${ctx}/envois/form"
+                                            class="btn btn-accent px-6 py-3 rounded-full font-bold hover:scale-105 transition-transform flex items-center gap-2">
+                                            <span class="text-xl leading-none">+</span> Nouvel envoi
+                                        </a>
                                 </div>
                             </div>
 
@@ -69,35 +82,55 @@
                                             <th class="text-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="envoisTableBody">
                                         <c:forEach var="e" items="${envoyers}">
-                                            <tr class="group hover:bg-gray-50 transition-colors">
-                                                <td class="px-4 py-4"><span class="badge badge-gray">${e.idEnv}</span>
-                                                </td>
-                                                <td class="px-4 py-4 font-bold text-gray-900">${e.numEnvoyeur}</td>
-                                                <td class="px-4 py-4 font-bold text-gray-900">${e.numRecepteur}</td>
-                                                <td class="px-4 py-4 text-lg font-black text-ink">${e.montant} €</td>
-                                                <td class="px-4 py-4">
-                                                    <div class="text-xs font-bold uppercase text-gray-400">
-                                                        ${e.formattedDate}</div>
-                                                    <div class="text-sm text-gray-500 italic truncate max-w-[150px]">
-                                                        ${e.raison}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="flex justify-center items-center gap-2">
-                                                        <a href="${ctx}/envois/form?idEnv=${e.idEnv}"
-                                                            class="btn btn-ghost py-1 px-3 text-xs">Détails</a>
-                                                        <button type="button"
-                                                            onclick="openDeleteModal('${ctx}/envois/delete?idEnv=${e.idEnv}', 'Supprimer l\'envoi ${e.idEnv} ?')"
-                                                            class="btn btn-danger !p-2 px-4 text-xs">
-                                                            Supprimer
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            <%-- data-date doit être au format ISO yyyy-MM-dd (getter isoDate dans le
+                                                bean) --%>
+                                                <tr class="group hover:bg-gray-50 transition-colors"
+                                                    data-date="${e.isoDate}">
+                                                    <td class="px-4 py-4"><span
+                                                            class="badge badge-gray">${e.idEnv}</span></td>
+                                                    <td class="px-4 py-4 font-bold text-gray-900">${e.numEnvoyeur}</td>
+                                                    <td class="px-4 py-4 font-bold text-gray-900">${e.numRecepteur}</td>
+                                                    <td class="px-4 py-4 text-lg font-black text-ink">${e.montant} €
+                                                    </td>
+                                                    <td class="px-4 py-4">
+                                                        <div class="text-xs font-bold uppercase text-gray-400">
+                                                            ${e.formattedDate}</div>
+                                                        <div
+                                                            class="text-sm text-gray-500 italic truncate max-w-[150px]">
+                                                            ${e.raison}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="flex justify-center items-center gap-2">
+                                                            <a href="${ctx}/envois/form?idEnv=${e.idEnv}"
+                                                                class="btn btn-ghost py-1 px-3 text-xs">Détails</a>
+                                                            <button type="button"
+                                                                onclick="openDeleteModal('${ctx}/envois/delete?idEnv=${e.idEnv}', 'Supprimer l\'envoi ${e.idEnv} ?')"
+                                                                class="btn btn-danger !p-2 px-4 text-xs">
+                                                                Supprimer
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                         </c:forEach>
                                     </tbody>
                                 </table>
+
+                                <%-- Message "Aucun résultat" affiché si aucune ligne ne correspond --%>
+                                    <div id="emptyState" class="hidden text-center py-16 text-gray-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-12 w-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <p class="font-semibold">Aucun envoi pour cette date</p>
+                                        <button id="clearDateEmpty"
+                                            class="mt-3 text-sm text-yellow-600 hover:underline font-medium">
+                                            Effacer le filtre
+                                        </button>
+                                    </div>
                             </div>
 
                         </section>
@@ -107,9 +140,55 @@
                 <c:if test="${showForm}">
                     <jsp:include page="form.jsp" />
                 </c:if>
+
                 <script src="${pageContext.request.contextPath}/js/delete.js"></script>
                 <%@ include file="/WEB-INF/views/fragments/toast.jsp" %>
                     <%@ include file="/WEB-INF/views/fragments/deleteModal.jsp" %>
+
+                        <script>
+                            (function () {
+                                const input = document.getElementById('dateFilter');
+                                const clearBtn = document.getElementById('clearDate');
+                                const clearEmpty = document.getElementById('clearDateEmpty');
+                                const rows = document.querySelectorAll('#envoisTableBody tr[data-date]');
+                                const counter = document.getElementById('txCount');
+                                const emptyState = document.getElementById('emptyState');
+
+                                function applyFilter() {
+                                    const val = input.value; 
+                                    let visible = 0;
+
+                                    rows.forEach(function (row) {
+                                        const match = !val || row.dataset.date === val;
+                                        row.style.display = match ? '' : 'none';
+                                        if (match) visible++;
+                                    });
+
+                                    clearBtn.classList.toggle('hidden', !val);
+
+                                    emptyState.classList.toggle('hidden', visible > 0);
+
+                                    if (counter) {
+                                        counter.textContent = visible + ' transaction' + (visible > 1 ? 's' : '');
+                                    }
+                                }
+
+                                input.addEventListener('input', applyFilter);
+
+                                clearBtn.addEventListener('click', function () {
+                                    input.value = '';
+                                    applyFilter();
+                                });
+
+                                if (clearEmpty) {
+                                    clearEmpty.addEventListener('click', function () {
+                                        input.value = '';
+                                        applyFilter();
+                                    });
+                                }
+                                if (input.value) applyFilter();
+                            })();
+                        </script>
 
             </body>
 
