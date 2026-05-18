@@ -50,6 +50,7 @@
                                     <tr class="text-gray-400 text-[11px] uppercase tracking-widest font-bold">
                                         <th class="px-4 pb-4">Contact</th>
                                         <th class="px-4 pb-4">Nom</th>
+                                        <th class="px-4 pb-4">Email</th>
                                         <th class="px-4 pb-4">Pays</th>
                                         <th class="px-4 pb-4 text-right">Solde</th>
                                         <th class="px-4 pb-4 text-right">Actions</th>
@@ -62,6 +63,7 @@
                                                 <span class="badge badge-gray">${c.numtel}</span>
                                             </td>
                                             <td class="px-4 py-4 font-bold">${c.nom}</td>
+                                            <td class="px-4 py-4 text-sm text-gray-500">${c.email}</td>
                                             <td class="px-4 py-4 text-sm text-gray-500">${c.pays}</td>
                                             <td class="px-4 py-4 text-center font-black">${c.solde}</td>
                                             <td class="px-4 py-4 text-center rounded-r-2xl">

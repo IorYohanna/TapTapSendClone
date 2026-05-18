@@ -23,7 +23,9 @@
                             <div>
                                 <label class="label">Numéro de téléphone</label>
                                 <input type="text" name="numtel" value="${client.numtel}" ${not empty client.numtel
-                                    ? 'readonly' : '' } required placeholder="03XXXXXXXX"
+                                    ? 'readonly' : '' } required maxlength="10" pattern="[0-9]{10}"
+                                    title="Le numéro de téléphone doit être composé de exactement 10 chiffres (ex: 0321234567)"
+                                    placeholder="03XXXXXXXX"
                                     class="input ${not empty client.numtel ? 'bg-gray-100 text-gray-400' : ''}" />
                             </div>
                             <div>

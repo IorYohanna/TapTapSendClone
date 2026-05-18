@@ -53,8 +53,8 @@
 
                         <div>
                             <label class="label">Montant à envoyer (€)</label>
-                            <input type="number" name="montant" value="${envoyer.montant}" required
-                                class="input text-xl font-bold" placeholder="0.00">
+                            <input type="number" name="montant" min="1" value="${envoyer.montant}" required
+                                class="input text-xl font-bold" placeholder="0">
                         </div>
 
                         <div>

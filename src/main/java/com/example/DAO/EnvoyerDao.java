@@ -30,53 +30,25 @@ public class EnvoyerDao {
         }
     }
 
-    // ----------------------------------------------------------
-    // Taux : combien d'EUR pour 1 unité de la devise locale
-    // USD → 4.0 (1 USD = 4 EUR, d'après tes données)
-    // MGA → 1/4000 = 0.00025
-    // EUR → 1.0
-    // La table TAUX contient des lignes du type :
-    // pays1='France', montant1=1, pays2='Etats-Unis', montant2=4
-    // signifie : 1 EUR = 4 USD, donc 1 USD = 0.25 EUR ← NON dans ton cas
-    //
-    // !! Attention : d'après tes chiffres 1 USD = 4 EUR (pas 1 EUR = 4 USD)
-    // Vérifie bien dans ta table le sens de la relation.
-    // Le code ci-dessous lit TAUX tel que :
-    // pays1='France', montant1=X, pays2=?, montant2=Y
-    // → 1 EUR = Y/X unités de pays2
-    // → 1 unité de pays2 = X/Y EUR ← c'est tauxVersEuro
-    // ----------------------------------------------------------
-
-    /**
-     * Retourne combien d'EUR vaut 1 unité de la devise du pays donné.
-     * Exemple : tauxVersEuro("Etats-Unis") = 4.0 (si 1 USD = 4 EUR)
-     */
     private double tauxVersEuro(String pays) throws Exception {
         if (pays.equalsIgnoreCase("France"))
             return 1.0;
-
-        // Cherche la ligne France → pays (1 EUR = montant2/montant1 unités de pays)
-        // donc 1 unité locale = montant1/montant2 EUR
         String sql1 = "SELECT montant1, montant2 FROM TAUX " +
                 "WHERE pays1 = 'France' AND pays2 = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql1)) {
             ps.setString(1, pays);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // 1 EUR = (montant2/montant1) unités locales
-                // → 1 unité locale = montant1/montant2 EUR
                 return (double) rs.getInt("montant1") / rs.getInt("montant2");
             }
         }
 
-        // Cherche la ligne pays → France (1 unité locale = montant2/montant1 EUR)
         String sql2 = "SELECT montant1, montant2 FROM TAUX " +
                 "WHERE pays1 = ? AND pays2 = 'France'";
         try (PreparedStatement ps = conn.prepareStatement(sql2)) {
             ps.setString(1, pays);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // 1 unité locale = montant2/montant1 EUR
                 return (double) rs.getInt("montant2") / rs.getInt("montant1");
             }
         }
@@ -84,25 +56,16 @@ public class EnvoyerDao {
         throw new Exception("Taux introuvable pour le pays : " + pays);
     }
 
-    /**
-     * Convertit un montant en EUR vers la devise locale du pays.
-     * montantEnEur / tauxVersEuro(pays) = unités locales
-     * Exemple : 14 EUR → USD : 14 / 4.0 = 3.5 → 4 USD (arrondi)
-     * Exemple : 12 EUR → MGA : 12 / (1/4000) = 48 000 MGA
-     */
     private int convertirEurVersLocal(double montantEur, String pays) throws Exception {
         double taux = tauxVersEuro(pays); // EUR par unité locale
-        // montantEur en EUR, on veut des unités locales
-        // unités locales = montantEur / taux
         return (int) Math.round(montantEur / taux);
     }
 
-    // ----------------------------------------------------------
-    // Méthode principale
-    // ----------------------------------------------------------
     public void envoyerArgent(Envoyer env) throws Exception {
 
-        // 1. Vérifier unicité de l'ID
+        if (env.getMontant() <= 0) {
+            throw new Exception("Le montant doit être supérieur à 0 EUR.");
+        }
         String checkId = "SELECT COUNT(*) FROM ENVOYER WHERE idEnv = ?";
         try (PreparedStatement ps = conn.prepareStatement(checkId)) {
             ps.setString(1, env.getIdEnv());
@@ -116,7 +79,6 @@ public class EnvoyerDao {
         try {
             conn.setAutoCommit(false);
 
-            // 2. Infos envoyeur
             PreparedStatement ps1 = conn.prepareStatement(
                     "SELECT solde, pays, nom, email FROM CLIENT WHERE numtel = ?");
             ps1.setString(1, env.getNumEnvoyeur());
@@ -129,7 +91,6 @@ public class EnvoyerDao {
             String nomEnv = rs1.getString("nom");
             String mailEnv = rs1.getString("email");
 
-            // 3. Infos récepteur
             PreparedStatement ps2 = conn.prepareStatement(
                     "SELECT pays, nom, email FROM CLIENT WHERE numtel = ?");
             ps2.setString(1, env.getNumRecepteur());
@@ -141,27 +102,22 @@ public class EnvoyerDao {
             String nomRec = rs2.getString("nom");
             String mailRec = rs2.getString("email");
 
-            // 4. Vérification internationale
             if (paysEnv.equalsIgnoreCase(paysRec)) {
                 throw new Exception("Le transfert doit être international !");
             }
 
-            // 5. Frais en EUR (le montant env.getMontant() est déjà en EUR)
             int montantEur = env.getMontant(); // ex: 12 EUR
 
             PreparedStatement ps3 = conn.prepareStatement(
                     "SELECT frais FROM FRAIS_ENVOI WHERE ? BETWEEN montant1 AND montant2");
             ps3.setInt(1, montantEur);
             ResultSet rs3 = ps3.executeQuery();
-            int fraisEur = rs3.next() ? rs3.getInt("frais") : 0; // ex: 2 EUR
+            int fraisEur = rs3.next() ? rs3.getInt("frais") : 0;
 
-            int totalEur = montantEur + fraisEur; // ex: 14 EUR
+            int totalEur = montantEur + fraisEur;
 
-            // 6. Convertir le total (montant + frais) en devise locale de l'envoyeur
-            // John paie 14 EUR → en USD : 14 / 4.0 = 3.5 → 4 USD
             int debitLocal = convertirEurVersLocal(totalEur, paysEnv);
 
-            // 7. Vérifier que l'envoyeur a assez
             if (soldeEnv < debitLocal) {
                 String deviseEnv = obtenirDevise(paysEnv);
                 throw new Exception(
@@ -169,25 +125,20 @@ public class EnvoyerDao {
                                 + ", disponible : " + soldeEnv + " " + deviseEnv);
             }
 
-            // 8. Convertir le montant seul (sans frais) en devise locale du récepteur
-            // Marie reçoit 12 EUR → en MGA : 12 / (1/4000) = 48 000 MGA
             int creditLocal = convertirEurVersLocal(montantEur, paysRec);
 
-            // 9. Débiter l'envoyeur
             PreparedStatement ps4 = conn.prepareStatement(
                     "UPDATE CLIENT SET solde = solde - ? WHERE numtel = ?");
             ps4.setInt(1, debitLocal);
             ps4.setString(2, env.getNumEnvoyeur());
             ps4.executeUpdate();
 
-            // 10. Créditer le récepteur
             PreparedStatement ps5 = conn.prepareStatement(
                     "UPDATE CLIENT SET solde = solde + ? WHERE numtel = ?");
             ps5.setInt(1, creditLocal);
             ps5.setString(2, env.getNumRecepteur());
             ps5.executeUpdate();
 
-            // 11. Enregistrer la transaction
             PreparedStatement ps6 = conn.prepareStatement(
                     "INSERT INTO ENVOYER VALUES (?, ?, ?, ?, ?, ?)");
             ps6.setString(1, env.getIdEnv());
@@ -200,7 +151,6 @@ public class EnvoyerDao {
 
             conn.commit();
 
-            // 12. Notifications email (non bloquantes)
             String deviseEnv = obtenirDevise(paysEnv);
             String deviseRec = obtenirDevise(paysRec);
 
@@ -224,16 +174,13 @@ public class EnvoyerDao {
         }
     }
 
-    // ----------------------------------------------------------
-    // Utilitaires (inchangés sauf suppression des doublons)
-    // ----------------------------------------------------------
     private String obtenirDevise(String pays) {
         switch (pays.toLowerCase()) {
             case "france":
                 return "EUR";
             case "madagascar":
                 return "MGA";
-            case "etats-unis":
+            case "etat unis":
                 return "USD";
             case "maroc":
                 return "MAD";
@@ -268,7 +215,7 @@ public class EnvoyerDao {
 
     public List<Envoyer> lister() throws SQLException {
         List<Envoyer> list = new ArrayList<>();
-        String sql = "SELECT * FROM ENVOYER ORDER BY date DESC";
+        String sql = "SELECT * FROM ENVOYER ORDER BY idEnv ASC";
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
